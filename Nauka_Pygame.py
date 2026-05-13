@@ -1,5 +1,3 @@
-from tarfile import data_filter
-
 import pygame
 pygame.init()
 
@@ -40,7 +38,8 @@ while run:
         y -= vel
     if keys[pygame.K_DOWN]:
         y += vel
-    #Pilnowanie granic ekranu
+   #Pilnowanie granic ekranu - wymyśliłem to samemu. teraz to komentuję, bo już nie jest ważne
+    """ 
     if x >= screen_width:
         x -= screen_width
     if y >= screen_height:
@@ -48,9 +47,10 @@ while run:
     if x < 0:
         x += screen_width
     if y < 0:
-        y += screen_height
+        y += screen_height"""
     win.fill((0,0,0))
-    #DODAWANIE prostokąta - kolory są RGB
+    #DODAWANIE prostokąta - kolory są RGB, natomiast współrzędne x, y
+    # to współrzędne lewego górnego rogu prostokąta
     pygame.draw.rect(win, (255,0,0), (x, y, width, height))
     pygame.display.update()
 pygame.quit()
