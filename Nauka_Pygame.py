@@ -15,7 +15,7 @@ x = 50
 y = 50
 width = 40
 height = 60
-velocity = 5
+vel = 5
 
 #MAIN LOOP
 
@@ -28,15 +28,16 @@ while run:
             run = False
 
     keys = pygame.key.get_pressed()
-
+#Z uwagi na to, że lewy górny róg ekranu to 00,
+    # a prawy dolny to 500,500 należy odpowiednio skonfigurować komendy ruchu
     if keys[pygame.K_LEFT]:
-
+        x -= vel
     if keys[pygame.K_RIGHT]:
-
+        x += vel
     if keys[pygame.K_UP]:
-
+        y -= vel
     if keys[pygame.K_DOWN]:
-
+        y += vel
 
     #DODAWANIE prostokąta - kolory są RGB
     pygame.draw.rect(win, (255,0,0), (x, y, width, height))
