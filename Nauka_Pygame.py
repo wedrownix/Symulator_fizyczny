@@ -1,3 +1,5 @@
+from tarfile import data_filter
+
 import pygame
 pygame.init()
 
@@ -11,5 +13,14 @@ screen = pygame.display.set_mode((800,600))
 #PARAMETRY PIERWSZEJ POSTACI
 x = 50
 y = 50
-width = 400
-height = 400heigh = 60
+width = 40
+height = 60
+velocity = 5
+
+#MAIN LOOP
+
+run = True
+while run:
+    pygame.time.delay(100)
+
+    for event in pygame.event.get():
