@@ -15,7 +15,7 @@ x = 50
 y = 50
 width = 40
 height = 60
-vel = 60
+vel = 15
 
 #MAIN LOOP
 
@@ -30,16 +30,18 @@ while run:
     keys = pygame.key.get_pressed()
 #Z uwagi na to, że lewy górny róg ekranu to 00,
     # a prawy dolny to 500,500 należy odpowiednio skonfigurować komendy ruchu
-    if keys[pygame.K_LEFT]:
+    #teraz stworzyłem blokadę zabraniającą przenikać przez ściany
+    if keys[pygame.K_LEFT] and x> vel:
         x -= vel
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] and x< screen_width - width -vel:
         x += vel
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_UP] and y > vel:
         y -= vel
-    if keys[pygame.K_DOWN]:
+    if keys[pygame.K_DOWN] and y < screen_height - height -vel:
         y += vel
-   #Pilnowanie granic ekranu - wymyśliłem to samemu. teraz to komentuję, bo już nie jest ważne
-    """ 
+   #Pilnowanie granic ekranu - poprzez przechodzenie przez ekran
+    # - wymyśliłem to samemu. teraz to komentuję, bo już nie jest ważne
+    """
     if x >= screen_width:
         x -= screen_width
     if y >= screen_height:
@@ -48,9 +50,12 @@ while run:
         x += screen_width
     if y < 0:
         y += screen_height"""
+
     win.fill((0,0,0))
     #DODAWANIE prostokąta - kolory są RGB, natomiast współrzędne x, y
     # to współrzędne lewego górnego rogu prostokąta
     pygame.draw.rect(win, (255,0,0), (x, y, width, height))
     pygame.display.update()
 pygame.quit()
+
+
