@@ -17,8 +17,10 @@ width = 40
 height = 60
 vel = 15
 
-#MAIN LOOP
+isJump = True
+jumpCount = 10
 
+#MAIN LOOP
 run = True
 while run:
     pygame.time.delay(100)
@@ -35,10 +37,14 @@ while run:
         x -= vel
     if keys[pygame.K_RIGHT] and x< screen_width - width -vel:
         x += vel
-    if keys[pygame.K_UP] and y > vel:
-        y -= vel
-    if keys[pygame.K_DOWN] and y < screen_height - height -vel:
-        y += vel
+    if not(isJump):
+        if keys[pygame.K_UP] and y > vel:
+            y -= vel
+        if keys[pygame.K_DOWN] and y < screen_height - height -vel:
+            y += vel
+        if keys[pygame.K_SPACE]:
+            isJump = True
+    else:
    #Pilnowanie granic ekranu - poprzez przechodzenie przez ekran
     # - wymyśliłem to samemu. teraz to komentuję, bo już nie jest ważne
     """
