@@ -45,8 +45,14 @@ while run:
         if keys[pygame.K_SPACE]:
             isJump = True
     else:
+        #Na początek szybko przyśpieszam do góry, ale coraz wolniej
+        #10^2, 9^2 itd. potem gdy dojedę do 0 to zaczynam przyśpieszać w dół
+        #-1^2 -2^2 itd.
         if jumpCount >= -10:
-            y -= (jumpCount ** 2) * 0.5
+            neg = 1
+            if jumpCount < 0:
+                neg = -1
+            y -= (jumpCount ** 2) * 0.5 * neg
             jumpCount -= 1
         else:
             isJump = False
