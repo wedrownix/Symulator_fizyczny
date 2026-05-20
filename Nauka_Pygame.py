@@ -38,10 +38,11 @@ while run:
     if keys[pygame.K_RIGHT] and x< screen_width - width -vel:
         x += vel
     if not(isJump): #Podczas skoku nie można pozwolić użytkownikowi by poruszał się w górę lub dół
-        if keys[pygame.K_UP] and y > vel:
-            y -= vel
-        if keys[pygame.K_DOWN] and y < screen_height - height -vel:
-            y += vel
+        # BLOKUJĘ MOŻLIWOŚĆ PORUSZANIA SIĘ W GÓRĘ I W DÓŁ
+        # if keys[pygame.K_UP] and y > vel:
+        #     y -= vel
+        # if keys[pygame.K_DOWN] and y < screen_height - height -vel:
+        #     y += vel
         if keys[pygame.K_SPACE]:
             isJump = True
     else:
