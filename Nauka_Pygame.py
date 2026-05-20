@@ -2,12 +2,12 @@ import pygame
 pygame.init()
 
 #TWORZENIE OKNA, nasz win
-screen_width = 800
-screen_height = 600
+screen_width = 500
+screen_height = 480
 win = pygame.display.set_mode((screen_width,screen_height))
 
 pygame.display.set_caption("Nauka_Pygame")
-screen = pygame.display.set_mode((800,600))
+
 
 """##STARA OPCJA
 walkRight = [pygame.image.load('Game_images_test/R1.png'), pygame.image.load('Game_images_test/R2.png'), pygame.image.load('Game_images_test/R3.png'), pygame.image.load('Game_images_test/R4.png'), pygame.image.load('Game_images_test/R5.png'), pygame.image.load('Game_images_test/R6.png'), pygame.image.load('Game_images_test/R7.png'), pygame.image.load('Game_images_test/R8.png'), pygame.image.load('Game_images_test/R9.png')]
@@ -25,6 +25,7 @@ walkLeft  = [pygame.image.load(str(IMG_DIR / f"L{i}.png")) for i in range(1, 10)
 bg   = pygame.image.load(str(IMG_DIR / "bg.jpg"))
 char = pygame.image.load(str(IMG_DIR / "standing.png"))
 
+clock = pygame.time.Clock()
 #PARAMETRY PIERWSZEJ POSTACI
 x = 50
 y = 400
@@ -42,12 +43,23 @@ def redrawGameWindow():
     global walkCount
     win.blit(bg, (0,0))
 
+    if walkCount +1 >= 27: #kązdy rysunek na 3 klatki. mam 9 rysunków czyli 27
+        walkCount = 0
+
+    if left:
+        win.blit(walkLeft[walkCount//3], (x,y))
+        walkCount += 1
+    elif right:
+        win.blit(walkRight[walkCount//3], (x,y))
+        walkCount += 1
+    else:
+        win.blit(char, (x, y))
     pygame.display.update()
 
 #MAIN LOOP
 run = True
 while run:
-    pygame.time.delay(100)
+    clock.tick(27)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
