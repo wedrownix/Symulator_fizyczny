@@ -31,20 +31,23 @@ class player(object):
         self.right = False
         self.walkCount = 0
 
-def redrawGameWindow():
-    global walkCount
-    win.blit(bg, (0,0))
+    def draw(self,win):
+        if self.walkCount + 1 >= 27:
+            self.walkCount = 0
+        if self.left:
+            win.blit(walkLeft[self.walkCount // 3], (self.x, self.y))
+            self.walkCount += 1
+        elif self.right:
+            win.blit(walkRight[self.walkCount // 3], (self.x, self.y))
+            self.walkCount += 1
+        else:
+            win.blit(char, (self.x, self.y))
 
-    if walkCount +1 >= 27:
-        walkCount = 0
-    if left:
-        win.blit(walkLeft[walkCount//3], (x,y))
-        walkCount += 1
-    elif right:
-        win.blit(walkRight[walkCount//3], (x,y))
-        walkCount += 1
-    else:
-        win.blit(char, (x, y))
+
+
+def redrawGameWindow():
+    win.blit(bg, (0,0))
+    man.draw(win)
     pygame.display.update()
 
 man = player(x=300, y=410, width=64, height=64)
