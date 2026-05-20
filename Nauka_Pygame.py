@@ -11,13 +11,13 @@ screen = pygame.display.set_mode((800,600))
 
 
 #PARAMETRY PIERWSZEJ POSTACI
-x = 50
-y = 50
+x = 100
+y = 100
 width = 40
 height = 60
 vel = 15
 
-isJump = True
+isJump = False
 jumpCount = 10
 
 #MAIN LOOP
@@ -37,7 +37,7 @@ while run:
         x -= vel
     if keys[pygame.K_RIGHT] and x< screen_width - width -vel:
         x += vel
-    if not(isJump):
+    if not(isJump): #Podczas skoku nie można pozwolić użytkownikowi by poruszał się w górę lub dół
         if keys[pygame.K_UP] and y > vel:
             y -= vel
         if keys[pygame.K_DOWN] and y < screen_height - height -vel:
@@ -45,6 +45,13 @@ while run:
         if keys[pygame.K_SPACE]:
             isJump = True
     else:
+        if jumpCount >= -10:
+            y -= (jumpCount ** 2) * 0.5
+            jumpCount -= 1
+        else:
+            isJump = False
+            jumpCount = 10
+
    #Pilnowanie granic ekranu - poprzez przechodzenie przez ekran
     # - wymyśliłem to samemu. teraz to komentuję, bo już nie jest ważne
     """
