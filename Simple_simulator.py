@@ -17,20 +17,34 @@ simHeight = screen_height/cSale
 def cX(pos):
     return pos.x *cSale
 def cY(pos):
-    return pos.y *cSale
+    return screen_height - pos.y *cSale
 
 
 
-def draw():
-    pass
+class Ball:
+    def __init__(self, radius, x, y, vx, vy):
+        self.radius = radius
+        self.x = x
+        self.y = y
+        #self.vx = vx
+        #self.vy = vy
 
-def simulate():
-    pass
+ball = Ball(x = 0.2, y = 0.2, r = 0.2)
 
-def update():
-    simulate();
-    draw();
+"""#MAIN LOOP
+run = True
+while run:
+    pygame.time.delay(100)
 
-    pass
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+    #DODAWANIE prostokąta - kolory są RGB
+    pygame.draw.circle(win, (255,0,0), (ball.x, ball.y), ball.r)
+    pygame.display.update()
+pygame.quit()
 
-update()
+"""
+
+
+
