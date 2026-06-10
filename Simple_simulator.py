@@ -20,21 +20,41 @@ def cY(y):
     return screen_height - y *cScale
 
 
+gravity = {"x":0, "y":-10}
+timeStep = 1/60
 
 class Ball:
-    def __init__(self, radius, x, y):
+    def __init__(self, radius, x, y, vx, vy):
         self.radius = radius
         self.x = x
         self.y = y
-        #self.vx = vx
-        #self.vy = vy
+        self.vx = vx
+        self.vy = vy
 
-ball = Ball(x = 5, y = 5, radius = 5)
+ball = Ball(radius = 0.2, x = 0.2, y = 0.2, vx = 10, vy =15 )
 
-#MAIN LOOP
+def simulate():
+    ball.vx += gravity["x"] * timeStep
+    ball.vy += gravity["y"] * timeStep
+    ball.x += ball.vx * timeStep
+    ball.y += ball.vy * timeStep
+
+    if ball.x < 0:
+        ball.x = 0
+        ball.vx = -ball.vx
+
+    if ball.x > simWidth:
+        ball.x = simWidth
+        ball.vx = -ball.vx
+
+    if ball.y < 0:
+        ball.y = 0
+        ball.vy = -ball.vy
+
+
+"""#MAIN LOOP
 run = True
 while run:
-    pygame.time.delay(100)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -42,7 +62,7 @@ while run:
     #DODAWANIE prostokąta - kolory są RGB
     pygame.draw.circle(win, (255,0,0), (cX(ball.x), cY(ball.y)), ball.radius*cScale)
     pygame.display.update()
-pygame.quit()
+pygame.quit()"""
 
 
 
