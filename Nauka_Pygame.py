@@ -2,8 +2,8 @@ import pygame
 pygame.init()
 
 #TWORZENIE OKNA, nasz win
-screen_width = 500
-screen_height = 480
+screen_width = 480
+screen_height = 500
 win = pygame.display.set_mode((screen_width,screen_height))
 
 pygame.display.set_caption("Nauka_Pygame")
@@ -47,7 +47,7 @@ def redrawGameWindow():
         walkCount = 0
 
     if left:
-        win.blit(walkLeft[walkCount//3], (x,y))
+        win.blit(walkLeft[walkCount//3], (x,y)) #Dzielenie całkowite czyli 5//3 =1, spowalniam animację, co 3 klatki gry, jedna klatka animacji
         walkCount += 1
     elif right:
         win.blit(walkRight[walkCount//3], (x,y))
