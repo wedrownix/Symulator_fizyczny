@@ -52,17 +52,27 @@ def simulate():
         ball.vy = -ball.vy
 
 
-"""#MAIN LOOP
+#MAIN LOOP
+clock = pygame.time.Clock()
 run = True
 while run:
 
+    # Komendy od użytkownika - tzw. "events" czyli UP, DOWN, SPACEBAR itd.
+    win.fill((30, 30, 30))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-    #DODAWANIE prostokąta - kolory są RGB
+
+    # Logika gry
+    simulate()
+
+    # Rysowanie elementów
     pygame.draw.circle(win, (255,0,0), (cX(ball.x), cY(ball.y)), ball.radius*cScale)
     pygame.display.update()
-pygame.quit()"""
+
+    # kontrolowanie czasu
+    clock.tick(60)
+pygame.quit()
 
 
 
