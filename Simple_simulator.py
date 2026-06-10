@@ -10,28 +10,28 @@ pygame.display.set_caption("Nauka_Symulatora")
 
 
 simMinWidth = 20 #definiuje minimalną odległość obserwowaną na ekranie
-cSale = min(screen_width,screen_height)/simMinWidth
-simWidth = screen_width/cSale
-simHeight = screen_height/cSale
+cScale = min(screen_width,screen_height)/simMinWidth
+simWidth = screen_width/cScale
+simHeight = screen_height/cScale
 
-def cX(pos):
-    return pos.x *cSale
-def cY(pos):
-    return screen_height - pos.y *cSale
+def cX(x):
+    return x *cScale
+def cY(y):
+    return screen_height - y *cScale
 
 
 
 class Ball:
-    def __init__(self, radius, x, y, vx, vy):
+    def __init__(self, radius, x, y):
         self.radius = radius
         self.x = x
         self.y = y
         #self.vx = vx
         #self.vy = vy
 
-ball = Ball(x = 0.2, y = 0.2, r = 0.2)
+ball = Ball(x = 5, y = 5, radius = 5)
 
-"""#MAIN LOOP
+#MAIN LOOP
 run = True
 while run:
     pygame.time.delay(100)
@@ -40,11 +40,11 @@ while run:
         if event.type == pygame.QUIT:
             run = False
     #DODAWANIE prostokąta - kolory są RGB
-    pygame.draw.circle(win, (255,0,0), (ball.x, ball.y), ball.r)
+    pygame.draw.circle(win, (255,0,0), (cX(ball.x), cY(ball.y)), ball.radius*cScale)
     pygame.display.update()
 pygame.quit()
 
-"""
+
 
 
 
