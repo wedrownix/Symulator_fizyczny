@@ -69,8 +69,6 @@ gravity = {"x":0, "y":-10}
 timeStep = 1/60
 
 
-
-
 class Ball:
     def __init__(self, radius, mass, pos, vel):
         self.radius = radius
@@ -78,25 +76,9 @@ class Ball:
         self.pos = pos.clone()
         self.vel = vel.clone()
 
-ball = Ball(radius = 0.2, x = 0.2, y = 0.2, vx = 10, vy =15 )
-
-def simulate():
-    ball.vx += gravity["x"] * timeStep
-    ball.vy += gravity["y"] * timeStep
-    ball.x += ball.vx * timeStep
-    ball.y += ball.vy * timeStep
-
-    if ball.x < 0:
-        ball.x = 0
-        ball.vx = -ball.vx
-
-    if ball.x > simWidth:
-        ball.x = simWidth
-        ball.vx = -ball.vx
-
-    if ball.y < 0:
-        ball.y = 0
-        ball.vy = -ball.vy
+    def simulate(self, dt, gravity):
+        self.vel.add(gravity, dt)
+        self.pos.add(self.vel, dt)
 
 
 #MAIN LOOP
