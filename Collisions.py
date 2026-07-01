@@ -1,5 +1,5 @@
 import math
-
+import random
 import pygame
 pygame.init()
 import numpy as np
@@ -64,6 +64,7 @@ class Vector2():
     def dot(self, w):
         return (self.x*w[0]) + (self.y*w[1])
 
+#OBJECT - BALL
 class Ball:
     def __init__(self, radius, mass, pos, vel):
         self.radius = radius
@@ -75,6 +76,7 @@ class Ball:
         self.vel.add(gravity, dt)
         self.pos.add(self.vel, dt)
 
+#WORLD
 class PhysicsScene:
     def __init__(self):
         self.gravity = Vector2(0.0, 0.0)
@@ -84,6 +86,29 @@ class PhysicsScene:
         self.restitution = 1.0
 
 scene = PhysicsScene()
+
+#SET UP
+
+def setup_scene():
+    scene.balls = []
+
+    numBalls = 20
+
+    for _ in range(numBalls):
+        radius = 0.05 + random.random() * 0.1
+        mass = math.pi * radius * radius
+        
+        pos = Vector2(
+            random.random() * scene.worldSize.x,
+            random.random() * scene.worldSize.y
+        )
+
+        vel = Vector2(
+            -1.0 + 2.0 * random.random(),
+            -1.0 + 2.0 * random.random()
+        )
+
+        scene.balls.append(Ball(radius, mass, pos, vel))
 
 #MAIN LOOP
 clock = pygame.time.Clock()
