@@ -60,7 +60,9 @@ class Vector2D():
     def scale(self, s):
         self.x *= s
         self.y *= s
-    
+
+    def dot(self, w):
+        return (self.x*w[0]) + (self.y*w[1])
 
 
 gravity = {"x":0, "y":-10}
