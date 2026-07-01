@@ -139,7 +139,26 @@ def handle_ball_collision(b1: Vector2, b2: Vector2):
     b1.vel.add(dir, newV1 - v1)
     b2.vel.add(dir, newV2 - v2)
 
-    
+def handle_wall_collision(ball):
+    w = scene.worldSize
+    #lewa i prawa granica ekranu
+    if ball.pos.x < ball.radius:
+        ball.pos.x = ball.radius
+        ball.vel.x *= -1
+
+    if ball.pos.x > w.x - ball.radius:
+        ball.pos.x = w.x - ball.radius
+        ball.vel.x *= -1
+    #górna i dolna granca ekranu
+    if ball.pos.y < ball.radius:
+        ball.pos.y = ball.radius
+        ball.vel.y *= -1
+
+    if ball.pos.y > w.y - ball.radius:
+        ball.pos.y = w.y - ball.radius
+        ball.vel.y *= -1
+
+
 #MAIN LOOP
 clock = pygame.time.Clock()
 run = True
