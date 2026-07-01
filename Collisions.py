@@ -19,7 +19,17 @@ def cX(x):
 def cY(y):
     return screen_height - y *cScale
 
-
+#Vector Math
+class Vector2D():
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+    def set(self,v):
+        self.x = v[0]
+        self.y = v[1]
+    def clone(self):
+        return Vector2D(self.x,self.y)
+    
 gravity = {"x":0, "y":-10}
 timeStep = 1/60
 
