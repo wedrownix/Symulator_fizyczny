@@ -29,15 +29,15 @@ class Vector2:
         self.y = y
 
     def set(self,w):
-        self.x = w[0]
-        self.y = w[1]
+        self.x = w.x
+        self.y = w.y
 
     def clone(self):
         return Vector2(self.x,self.y)
 
     def add(self,w,s = 1):
-        self.x += w[0] * s
-        self.y += w[1] * s
+        self.x += w.x * s
+        self.y += w.y * s
         return self
 
     def addVectors(self, a, b):
@@ -46,8 +46,8 @@ class Vector2:
         return self
 
     def subtract(self,w, s = 1):
-        self.x -= w[0] *s
-        self.y -= w[1] *s
+        self.x -= w.x *s
+        self.y -= w.y *s
         return self
 
     def subtractVectors(self, a, b):
@@ -63,7 +63,7 @@ class Vector2:
         self.y *= s
 
     def dot(self, w):
-        return (self.x*w[0]) + (self.y*w[1])
+        return (self.x*w.x) + (self.y*w.y)
 
 #%%OBJECT - BALL
 class Ball:
