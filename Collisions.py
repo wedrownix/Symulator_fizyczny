@@ -22,7 +22,7 @@ def cY(y):
     return screen_height - y *cScale
 
 #Vector Math
-class Vector2D():
+class Vector2():
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
@@ -32,7 +32,7 @@ class Vector2D():
         self.y = w[1]
 
     def clone(self):
-        return Vector2D(self.x,self.y)
+        return Vector2(self.x,self.y)
 
     def add(self,w,s = 1):
         self.x += w[0] * s
@@ -64,11 +64,6 @@ class Vector2D():
     def dot(self, w):
         return (self.x*w[0]) + (self.y*w[1])
 
-
-gravity = {"x":0, "y":-10}
-timeStep = 1/60
-
-
 class Ball:
     def __init__(self, radius, mass, pos, vel):
         self.radius = radius
@@ -80,6 +75,16 @@ class Ball:
         self.vel.add(gravity, dt)
         self.pos.add(self.vel, dt)
 
+class PhysicsScene:
+    def __init__(self):
+        self.gravity = Vector2(0.0, 0.0)
+        self.dt = 1.0 / 60.0
+        self.worldSize = Vector2(2.0, 2.0)
+        self.balls = []
+        self.restitution = 1.0
+
+
+scene = PhysicsScene()
 
 #MAIN LOOP
 clock = pygame.time.Clock()
