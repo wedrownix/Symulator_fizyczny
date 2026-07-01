@@ -5,8 +5,8 @@ pygame.init()
 import numpy as np
 
 #%%TWORZENIE OKNA,
-screen_width = 500
-screen_height = 480
+screen_width = 1000
+screen_height = 700
 win = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("Nauka_Symulatora")
 
@@ -175,18 +175,19 @@ def draw():
 
 #MAIN LOOP
 clock = pygame.time.Clock()
-run = True
-while run:
+setup_scene()
 
-    # Logika gry
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
     simulate()
+    draw()
 
-    # Rysowanie elementów
-    pygame.draw.circle(win, (255,0,0), (cX(ball.x), cY(ball.y)), ball.radius*cScale)
-    pygame.display.update()
-
-    # kontrolowanie czasu
     clock.tick(60)
+
 pygame.quit()
 
 
