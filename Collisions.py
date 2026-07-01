@@ -68,13 +68,15 @@ class Vector2D():
 gravity = {"x":0, "y":-10}
 timeStep = 1/60
 
+
+
+
 class Ball:
-    def __init__(self, radius, x, y, vx, vy):
+    def __init__(self, radius, mass, pos, vel):
         self.radius = radius
-        self.x = x
-        self.y = y
-        self.vx = vx
-        self.vy = vy
+        self.mass = mass
+        self.pos = pos.clone()
+        self.vel = vel.clone()
 
 ball = Ball(radius = 0.2, x = 0.2, y = 0.2, vx = 10, vy =15 )
 
