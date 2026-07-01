@@ -80,11 +80,11 @@ class Ball:
 #%%WORLD
 class PhysicsScene:
     def __init__(self):
-        self.gravity = Vector2(0.0, 10)
+        self.gravity = Vector2(0, -10)
         self.dt = 1.0 / 60.0
         self.worldSize = Vector2(simWidth, simHeight)
         self.balls = []
-        self.restitution = 1.0
+        self.restitution = 0.9
 
 scene = PhysicsScene()
 
@@ -93,10 +93,10 @@ scene = PhysicsScene()
 def setup_scene():
     scene.balls = []
 
-    numBalls = 15
+    numBalls = 20
 
     for _ in range(numBalls):
-        radius = 0.05 + random.random() * 0.1
+        radius = 0.5 + random.random() * 0.5
         mass = math.pi * radius * radius
 
         pos = Vector2(
@@ -105,8 +105,8 @@ def setup_scene():
         )
 
         vel = Vector2(
-            -1.0 + 2.0 * random.random(),
-            -1.0 + 2.0 * random.random()
+            -1.0 + 4.0 * random.random(),
+            -1.0 + 4.0 * random.random()
         )
 
         scene.balls.append(Ball(radius, mass, pos, vel))
