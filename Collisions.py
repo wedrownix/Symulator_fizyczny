@@ -22,7 +22,7 @@ def cY(y):
     return screen_height - y *cScale
 
 #%%Vector Math
-class Vector2():
+class Vector2:
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
@@ -110,6 +110,36 @@ def setup_scene():
 
         scene.balls.append(Ball(radius, mass, pos, vel))
 
+#%% COLISSIONS
+def handle_ball_collision(b1: Vector2, b2: Vector2):
+    #Badam różnicę między odległościami
+    dir = Vector2().subtractVectors(b2.pos, b1.pos)
+    d = dir.length()
+
+    if d == 0 or d > b1.radius + b2.radius:
+        return
+    #Należy skorygować położenie kul
+    dir.scale(1.0 / d)
+
+    corr = (b1.radius + b2.radius - d) / 2.0
+    b1.pos.add(dir, -corr)
+    b2.pos.add(dir, corr)
+
+    v1 = b1.vel.dot(dir)
+    v2 = b2.vel.dot(dir)
+
+    m1 = b1.mass
+    m2 = b2.mass
+    #Parametr zderzenia
+    r = scene.restitution
+    #Wynik kolizji
+    newV1 = (m1*v1 + m2*v2 - m2*(v1 - v2)*r) / (m1 + m2)
+    newV2 = (m1*v1 + m2*v2 - m1*(v2 - v1)*r) / (m1 + m2)
+
+    b1.vel.add(dir, newV1 - v1)
+    b2.vel.add(dir, newV2 - v2)
+
+    
 #MAIN LOOP
 clock = pygame.time.Clock()
 run = True
