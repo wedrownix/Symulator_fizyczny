@@ -4,7 +4,7 @@ import pygame
 pygame.init()
 import numpy as np
 
-#TWORZENIE OKNA,
+#%%TWORZENIE OKNA,
 screen_width = 500
 screen_height = 480
 win = pygame.display.set_mode((screen_width,screen_height))
@@ -21,7 +21,7 @@ def cX(x):
 def cY(y):
     return screen_height - y *cScale
 
-#Vector Math
+#%%Vector Math
 class Vector2():
     def __init__(self, x=0, y=0):
         self.x = x
@@ -64,7 +64,7 @@ class Vector2():
     def dot(self, w):
         return (self.x*w[0]) + (self.y*w[1])
 
-#OBJECT - BALL
+#%%OBJECT - BALL
 class Ball:
     def __init__(self, radius, mass, pos, vel):
         self.radius = radius
@@ -76,7 +76,7 @@ class Ball:
         self.vel.add(gravity, dt)
         self.pos.add(self.vel, dt)
 
-#WORLD
+#%%WORLD
 class PhysicsScene:
     def __init__(self):
         self.gravity = Vector2(0.0, 0.0)
@@ -87,17 +87,17 @@ class PhysicsScene:
 
 scene = PhysicsScene()
 
-#SET UP
+#%%SET UP
 
 def setup_scene():
     scene.balls = []
 
-    numBalls = 20
+    numBalls = 15
 
     for _ in range(numBalls):
         radius = 0.05 + random.random() * 0.1
         mass = math.pi * radius * radius
-        
+
         pos = Vector2(
             random.random() * scene.worldSize.x,
             random.random() * scene.worldSize.y
