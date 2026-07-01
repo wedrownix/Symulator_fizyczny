@@ -158,17 +158,25 @@ def handle_wall_collision(ball):
         ball.pos.y = w.y - ball.radius
         ball.vel.y *= -1
 
+#%% DRAWING
+
+def draw():
+    win.fill((30, 30, 30))
+    for b in scene.balls:
+        pygame.draw.circle(
+            win,
+            (255, 0, 0),
+            (cX(b.pos.x), cY(b.pos.y)),
+            int(b.radius * cScale)
+        )
+    pygame.display.flip()
+
+
 
 #MAIN LOOP
 clock = pygame.time.Clock()
 run = True
 while run:
-
-    # Komendy od użytkownika - tzw. "events" czyli UP, DOWN, SPACEBAR itd.
-    win.fill((30, 30, 30))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
 
     # Logika gry
     simulate()
