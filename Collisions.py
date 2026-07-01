@@ -73,14 +73,14 @@ class Ball:
         self.pos = pos.clone()
         self.vel = vel.clone()
 
-    def simulate(self, dt, gravity):
+    def simulate(self, gravity, dt):
         self.vel.add(gravity, dt)
         self.pos.add(self.vel, dt)
 
 #%%WORLD
 class PhysicsScene:
     def __init__(self):
-        self.gravity = Vector2(0.0, 0.0)
+        self.gravity = Vector2(0.0, 10)
         self.dt = 1.0 / 60.0
         self.worldSize = Vector2(simWidth, simHeight)
         self.balls = []
@@ -112,7 +112,7 @@ def setup_scene():
         scene.balls.append(Ball(radius, mass, pos, vel))
 
 #%% COLISSIONS
-def handle_ball_collision(b1: Vector2, b2: Vector2):
+def handle_ball_collision(b1: Ball, b2: Ball):
     #Badam różnicę między odległościami
     dir = Vector2().subtractVectors(b2.pos, b1.pos)
     d = dir.length()
@@ -158,6 +158,23 @@ def handle_wall_collision(ball):
     if ball.pos.y > w.y - ball.radius:
         ball.pos.y = w.y - ball.radius
         ball.vel.y *= -1
+
+#%% SIMULATION
+
+def simulate():
+    for i in range(len(scene.balls)):
+        ball1 = scene.balls[i]
+
+        # Ruch kulki
+        ball1.simulate(scene.gravity,scene.dt)
+
+        # Kolizje z pozostałymi kulkami
+        for j in range(i + 1, len(scene.balls)):
+            ball2 = scene.balls[j]
+            handle_ball_collision(ball1, ball2)
+
+        # Kolizje ze ścianami
+        handle_wall_collision(ball1)
 
 #%% DRAWING
 
