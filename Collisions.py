@@ -24,15 +24,27 @@ class Vector2D():
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
+
     def set(self,w):
         self.x = w[0]
         self.y = w[1]
+
     def clone(self):
         return Vector2D(self.x,self.y)
+
     def add(self,w,s = 1):
         self.x += w[0] * s
         self.y += w[1] * s
         return self
+
+    def addVectors(self, a, b):
+        self.x = a.x + b.x
+        self.y = a.y + b.y
+        return self
+
+
+
+
 
 gravity = {"x":0, "y":-10}
 timeStep = 1/60
