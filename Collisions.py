@@ -9,6 +9,7 @@ screen_width = 1000
 screen_height = 700
 win = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("Nauka_Symulatora")
+clock = pygame.time.Clock()
 
 
 simMinWidth = 20 #definiuje minimalną odległość obserwowaną na ekranie
@@ -173,8 +174,8 @@ def draw():
 
 
 
-#MAIN LOOP
-clock = pygame.time.Clock()
+#%%MAIN LOOP
+
 setup_scene()
 
 running = True
