@@ -42,7 +42,15 @@ class Vector2D():
         self.y = a.y + b.y
         return self
 
+    def subtract(self,w, s = 1):
+        self.x -= w[0] *s
+        self.y -= w[1] *s
+        return self
 
+    def subtractVectors(self, a, b):
+        self.x = a.x - b.x
+        self.y = a.y - b.y
+        return self
 
 
 
