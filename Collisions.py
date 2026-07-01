@@ -1,3 +1,5 @@
+import math
+
 import pygame
 pygame.init()
 import numpy as np
@@ -52,6 +54,13 @@ class Vector2D():
         self.y = a.y - b.y
         return self
 
+    def length(self):
+        return math.sqrt(self.x**2 + self.y**2)
+
+    def scale(self, s):
+        self.x *= s
+        self.y *= s
+    
 
 
 gravity = {"x":0, "y":-10}
