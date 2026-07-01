@@ -79,10 +79,9 @@ class PhysicsScene:
     def __init__(self):
         self.gravity = Vector2(0.0, 0.0)
         self.dt = 1.0 / 60.0
-        self.worldSize = Vector2(2.0, 2.0)
+        self.worldSize = Vector2(simWidth, simHeight)
         self.balls = []
         self.restitution = 1.0
-
 
 scene = PhysicsScene()
 
