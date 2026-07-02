@@ -265,3 +265,79 @@ def setup_scene():
             restitution
         )
     ]
+#%%Drawng
+def draw_disc(x, y, radius, color):
+    pygame.draw.circle(
+        win,
+        color,
+        (int(cX(x)), int(cY(y))),
+        int(radius * cScale)
+    )
+
+
+def draw():
+
+    win.fill((255, 255, 255))
+
+    # ---------------- Border ----------------
+
+    if len(scene.border) >= 2:
+
+        points = []
+
+        for v in scene.border:
+            points.append((cX(v.x), cY(v.y)))
+
+        pygame.draw.lines(
+            win,
+            (0, 0, 0),
+            True,
+            points,
+            5
+        )
+
+    # ---------------- Balls ----------------
+
+    for ball in scene.balls:
+        draw_disc(
+            ball.pos.x,
+            ball.pos.y,
+            ball.radius,
+            (32, 32, 32)
+        )
+
+    # ---------------- Obstacles ----------------
+
+    for obstacle in scene.obstacles:
+        draw_disc(
+            obstacle.pos.x,
+            obstacle.pos.y,
+            obstacle.radius,
+            (255, 128, 0)
+        )
+
+    # ---------------- Flippers ----------------
+
+    for flipper in scene.flippers:
+
+        angle = flipper.restAngle + flipper.sign * flipper.rotation
+
+        x1 = flipper.pos.x
+        y1 = flipper.pos.y
+
+        x2 = x1 + flipper.length * math.cos(angle)
+        y2 = y1 + flipper.length * math.sin(angle)
+
+        # prostokąt zastępujemy grubą linią
+        pygame.draw.line(
+            win,
+            (255, 0, 0),
+            (cX(x1), cY(y1)),
+            (cX(x2), cY(y2)),
+            int(2 * flipper.radius * cScale)
+        )
+
+        draw_disc(x1, y1, flipper.radius, (255, 0, 0))
+        draw_disc(x2, y2, flipper.radius, (255, 0, 0))
+
+    pygame.display.flip()
