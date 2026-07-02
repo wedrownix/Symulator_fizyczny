@@ -154,9 +154,9 @@ class Flipper:
             self.sign * (self.rotation - previousRotation) / dt
         )
 
-    def select(self, pos):
+    def select(self, pos): #Sprawdzenie, czy uzytkownik kliknął flipper, pos - pozycja myszk
         d = Vec2()
-        d.subtractVectors(self.pos, pos)
+        d.subtractVectors(self.pos, pos) #Wektor od miejsca kliknięcia do zawiasu, jeśli kliknę w obszar okręgu wyznaczony przez ramię zawiasu to znaczy, że inicuję flipper
         return d.length() < self.length
 
     def getTip(self):
