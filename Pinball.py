@@ -88,3 +88,18 @@ def closest_point_on_segment(p: Vec2, a: Vec2, b: Vec2) -> Vec2:
     closest.add(ab, t)
 
     return closest
+
+#%%OBJECT - BALL
+class Ball:
+    def __init__(self, radius, mass, pos, vel, restitution):
+        self.radius = radius
+        self.mass = mass
+        self.restitution = restitution
+
+        self.pos = pos.clone()
+        self.vel = vel.clone()
+
+    def simulate(self, gravity, dt):
+        self.vel.add(gravity, dt)
+        self.pos.add(self.vel, dt)
+
