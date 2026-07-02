@@ -11,7 +11,7 @@ win = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("Pinball")
 clock = pygame.time.Clock()
 
-
+FLIPPER_HEIGHT = 1.7
 simMinWidth = 20 #definiuje minimalną odległość obserwowaną na ekranie
 cScale = min(screen_width,screen_height)/simMinWidth
 simWidth = screen_width/cScale
