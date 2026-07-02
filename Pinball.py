@@ -107,4 +107,4 @@ class Obstacle:
     def __init__(self, radius, pos, pushVel):
         self.radius = radius
         self.pos = pos.clone()
-        self.pushVel = pushVel
+        self.pushVel = pushVel  # Wzmocnienie prędkości przy odbijaniu
