@@ -111,8 +111,8 @@ class Obstacle:
 
 class Flipper:
     def __init__(self,
-                 radius, #promień fliperra
-                 pos, #punkt obrotu-zawias
+                 radius,
+                 pos,
                  length,
                  restAngle,
                  maxRotation,
@@ -120,14 +120,14 @@ class Flipper:
                  restitution):
 
         # Stałe parametry
-        self.radius = radius
-        self.pos = pos.clone()
+        self.radius = radius #promień fliperra
+        self.pos = pos.clone() #punkt obrotu-zawias
         self.length = length
-        self.restAngle = restAngle
-        self.maxRotation = abs(maxRotation)
-        self.sign = 1 if maxRotation >= 0 else -1
-        self.angularVelocity = angularVelocity
-        self.restitution = restitution
+        self.restAngle = restAngle #kąt spoczynkowy
+        self.maxRotation = abs(maxRotation) #maxroation
+        self.sign = 1 if maxRotation >= 0 else -1 #znak odpowiadający za lewego i prawego flipera
+        self.angularVelocity = angularVelocity #omega
+        self.restitution = restitution #tłumienie
 
         # Parametry zmienne
         self.rotation = 0.0
