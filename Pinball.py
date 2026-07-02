@@ -108,3 +108,66 @@ class Obstacle:
         self.radius = radius
         self.pos = pos.clone()
         self.pushVel = pushVel  # Wzmocnienie prędkości przy odbijaniu
+
+class Flipper:
+    def __init__(self,
+                 radius, #promień fliperra
+                 pos, #punkt obrotu-zawias
+                 length,
+                 restAngle,
+                 maxRotation,
+                 angularVelocity,
+                 restitution):
+
+        # Stałe parametry
+        self.radius = radius
+        self.pos = pos.clone()
+        self.length = length
+        self.restAngle = restAngle
+        self.maxRotation = abs(maxRotation)
+        self.sign = 1 if maxRotation >= 0 else -1
+        self.angularVelocity = angularVelocity
+        self.restitution = restitution
+
+        # Parametry zmienne
+        self.rotation = 0.0
+        self.currentAngularVelocity = 0.0
+        self.touchIdentifier = -1
+
+    def simulate(self, dt):
+        previousRotation = self.rotation
+
+        pressed = self.touchIdentifier >= 0
+
+        if pressed:
+            self.rotation = min(
+                self.rotation + dt * self.angularVelocity,
+                self.maxRotation
+            )
+        else:
+            self.rotation = max(
+                self.rotation - dt * self.angularVelocity,
+                0.0
+            )
+
+        self.currentAngularVelocity = (
+            self.sign * (self.rotation - previousRotation) / dt
+        )
+
+    def select(self, pos):
+        d = Vec2()
+        d.subtractVectors(self.pos, pos)
+        return d.length() < self.length
+
+    def getTip(self):
+        angle = self.restAngle + self.sign * self.rotation
+
+        direction = Vec2(
+            math.cos(angle),
+            math.sin(angle)
+        )
+
+        tip = self.pos.clone()
+        tip.add(direction, self.length)
+
+        return tip
