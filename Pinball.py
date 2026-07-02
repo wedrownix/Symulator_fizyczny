@@ -186,3 +186,82 @@ class PhysicsScene:
         self.flippers = []
 scene = PhysicsScene()
 
+def setup_scene():
+    offset = 0.02
+    scene.score = 0
+
+    # Border - tworzę wielokąt z moimi granicami mapy
+
+    scene.border = [
+        Vec2(0.74, 0.25),
+        Vec2(1.0 - offset, 0.40),
+        Vec2(1.0 - offset, FLIPPER_HEIGHT - offset),
+        Vec2(offset, FLIPPER_HEIGHT - offset),
+        Vec2(offset, 0.40),
+        Vec2(0.26, 0.25),
+        Vec2(0.26, 0.00),
+        Vec2(0.74, 0.00),
+    ]
+
+    # Balls
+
+    radius = 0.03
+    mass = math.pi * radius * radius
+
+    scene.balls = [
+        Ball(
+            radius,
+            mass,
+            Vec2(0.92, 0.50),
+            Vec2(-0.2, 3.5),
+            restitution=0.2
+        ),
+        Ball(
+            radius,
+            mass,
+            Vec2(0.08, 0.50),
+            Vec2(0.2, 3.5),
+            restitution=0.2
+        )
+    ]
+
+    # Obstacles
+
+    scene.obstacles = [
+        Obstacle(0.10, Vec2(0.25, 0.60), 2.0),
+        Obstacle(0.10, Vec2(0.75, 0.50), 2.0),
+        Obstacle(0.12, Vec2(0.70, 1.00), 2.0),
+        Obstacle(0.10, Vec2(0.20, 1.20), 2.0),
+    ]
+
+    # Flippers
+
+    scene.flippers = []
+
+    radius = 0.03
+    length = 0.20
+    maxRotation = 1.0
+    restAngle = 0.5
+    angularVelocity = 10.0
+    restitution = 0.0
+
+    scene.flippers = [
+        Flipper(
+            radius,
+            Vec2(0.26, 0.22),
+            length,
+            -restAngle,
+            maxRotation,
+            angularVelocity,
+            restitution
+        ),
+        Flipper(
+            radius,
+            Vec2(0.74, 0.22),
+            length,
+            math.pi + restAngle,
+            -maxRotation,
+            angularVelocity,
+            restitution
+        )
+    ]
