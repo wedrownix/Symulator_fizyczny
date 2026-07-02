@@ -184,3 +184,5 @@ class PhysicsScene:
         self.balls = []
         self.obstacles = []
         self.flippers = []
+scene = PhysicsScene()
+
