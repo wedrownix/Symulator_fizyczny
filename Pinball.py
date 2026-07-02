@@ -72,3 +72,19 @@ class Vec2:
     def perp(self):
         """Zwraca wektor prostopadły (-y, x)."""
         return Vec2(-self.y, self.x)
+
+def closest_point_on_segment(p: Vec2, a: Vec2, b: Vec2) -> Vec2:
+    ab = Vec2()
+    ab.subtractVectors(b, a)
+
+    t = ab.dot(ab)
+
+    if t == 0.0:
+        return a.clone()
+
+    t = max(0.0, min(1.0, (p.dot(ab) - a.dot(ab)) / t))
+
+    closest = a.clone()
+    closest.add(ab, t)
+
+    return closest
