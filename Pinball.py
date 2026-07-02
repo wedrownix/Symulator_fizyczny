@@ -159,7 +159,7 @@ class Flipper:
         d.subtractVectors(self.pos, pos) #Wektor od miejsca kliknięcia do zawiasu, jeśli kliknę w obszar okręgu wyznaczony przez ramię zawiasu to znaczy, że inicuję flipper
         return d.length() < self.length
 
-    def getTip(self):
+    def getTip(self): #Tworzę wektor wzdłuż ramienia flipera o długości flippera
         angle = self.restAngle + self.sign * self.rotation
 
         direction = Vec2(
