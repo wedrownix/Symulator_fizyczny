@@ -171,3 +171,16 @@ class Flipper:
         tip.add(direction, self.length)
 
         return tip
+
+#%%WORLD
+class PhysicsScene:
+    def __init__(self):
+        self.gravity = Vec2(0.0, -3.0)
+        self.dt = 1.0 / 60.0
+
+        self.score = 0
+
+        self.border = []
+        self.balls = []
+        self.obstacles = []
+        self.flippers = []
