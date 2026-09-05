@@ -425,6 +425,12 @@ def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
         dist = normal.length()
     d.scale(1.0 / dist)
 
+    # Odbicie: składowa prędkości wzdłuż d zostaje "wyprostowana" tak,
+    # by zawsze wskazywała na zewnątrz (abs), z tłumieniem restytucją.
+    v = ball.vel.dot(d)
+    v_new = abs(v) * ball.restitution
+    ball.vel.add(d, v_new - v)
+
 #%%MAIN LOOP
 
 setup_scene()
