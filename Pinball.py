@@ -268,18 +268,12 @@ def draw_disc(x, y, radius, color):
 
 
 def draw():
-
     win.fill((255, 255, 255))
-
     # ---------------- Border ----------------
-
     if len(scene.border) >= 2:
-
         points = []
-
         for v in scene.border:
             points.append((cX(v.x), cY(v.y)))
-
         pygame.draw.lines(
             win,
             (0, 0, 0),
@@ -287,9 +281,7 @@ def draw():
             points,
             5
         )
-
     # ---------------- Balls ----------------
-
     for ball in scene.balls:
         draw_disc(
             ball.pos.x,
@@ -297,9 +289,7 @@ def draw():
             ball.radius,
             (32, 32, 32)
         )
-
     # ---------------- Obstacles ----------------
-
     for obstacle in scene.obstacles:
         draw_disc(
             obstacle.pos.x,
@@ -307,11 +297,8 @@ def draw():
             obstacle.radius,
             (255, 128, 0)
         )
-
     # ---------------- Flippers ----------------
-
     for flipper in scene.flippers:
-
         angle = flipper.restAngle + flipper.sign * flipper.rotation
 
         x1 = flipper.pos.x
@@ -328,18 +315,16 @@ def draw():
             (cX(x2), cY(y2)),
             int(2 * flipper.radius * cScale)
         )
-
         draw_disc(x1, y1, flipper.radius, (255, 0, 0))
         draw_disc(x2, y2, flipper.radius, (255, 0, 0))
-
     pygame.display.flip()
 
 
 
 #%%Collision handling
-def handle_ball_collision(b1: Ball, b2: Ball):
+def handle_ball_ball_collision(b1: Ball, b2: Ball):
     #Badam różnicę między odległościami
-    dir = Vector2().subtractVectors(b2.pos, b1.pos)
+    dir = Vec2().subtractVectors(b2.pos, b1.pos)
     d = dir.length()
 
     if d == 0 or d > b1.radius + b2.radius: #d==0, to wtedy jesli wylosuję kolizję tej samej kulki ze sobą
@@ -365,24 +350,33 @@ def handle_ball_collision(b1: Ball, b2: Ball):
     b1.vel.add(dir, newV1 - v1)
     b2.vel.add(dir, newV2 - v2)
 
-def handle_wall_collision(ball):
-    w = scene.worldSize
-    #lewa i prawa granica ekranu
-    if ball.pos.x < ball.radius:
-        ball.pos.x = ball.radius
-        ball.vel.x *= -1
 
-    if ball.pos.x > w.x - ball.radius:
-        ball.pos.x = w.x - ball.radius
-        ball.vel.x *= -1
-    #górna i dolna granca ekranu
-    if ball.pos.y < ball.radius:
-        ball.pos.y = ball.radius
-        ball.vel.y *= -1
+def handle_ball_obstacle_collision(ball: Ball, obstacle: Obstacle):
+    #Badam różnicę między odległościami
+    dir = Vec2().subtractVectors(ball.pos, obstacle.pos)
+    d = dir.length()
+    if d == 0 or d > ball.radius + obstacle.radius:
+        return
+    #Należy skorygować położenie kul
+    dir.scale(1.0 / d)
 
-    if ball.pos.y > w.y - ball.radius:
-        ball.pos.y = w.y - ball.radius
-        ball.vel.y *= -1
+    corr = ball.radius + obstacle.radius - d
+    ball.pos.add(dir, corr)
+
+    v = ball.vel.dot(dir)
+    ball.vel.add(dir, obstacle.pushVel - v)
+
+    scene.score += 1
+
+
+def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
+
+    closest = closest_point_on_segment(ball.pos, flipper.pos, flipper.getTip() )
+
+
+
+
+
 
 #%%MAIN LOOP
 
