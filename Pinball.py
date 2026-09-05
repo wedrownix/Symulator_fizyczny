@@ -5,8 +5,8 @@ pygame.init()
 from typing import List
 
 #%%TWORZENIE OKNA,
-screen_width = 1000
-screen_height = 700
+screen_width = 1500
+screen_height = 1200
 win = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("Pinball")
 clock = pygame.time.Clock()
@@ -128,6 +128,7 @@ class Flipper:
         # Parametry zmienne
         self.rotation = 0.0
         self.currentAngularVelocity = 0.0
+        # -1 = flipper puszczony; dowolna wartość >= 0 = flipper wciśnięty.
         self.touchIdentifier = -1
 
     def simulate(self, dt):
@@ -459,10 +460,6 @@ def simulate():
 
         handle_ball_border_collision(ball, scene.border)
 
-#%% KOMENDY
-keys = pygame.key.get_pressed()
-scene.flippers[0].touchIdentifier = 0 if keys[pygame.K_LEFT] else -1 # jeśli wciśnięty klawisz to zaczyna flipper przyśpieszać
-scene.flippers[1].touchIdentifier = 0 if keys[pygame.K_RIGHT] else -1
 #%%MAIN LOOP
 
 setup_scene()
@@ -472,6 +469,11 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    keys = pygame.key.get_pressed()
+    scene.flippers[0].touchIdentifier = 0 if keys[pygame.K_LEFT] else -1  # jeśli wciśnięty klawisz to zaczyna flipper przyśpieszać
+    scene.flippers[1].touchIdentifier = 0 if keys[pygame.K_RIGHT] else -1
+
     simulate()
     draw()
     clock.tick(60)
