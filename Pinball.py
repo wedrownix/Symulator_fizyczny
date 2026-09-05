@@ -170,9 +170,7 @@ class PhysicsScene:
     def __init__(self):
         self.gravity = Vec2(0.0, -3.0)
         self.dt = 1.0 / 60.0
-
         self.score = 0
-
         self.border = []
         self.balls = []
         self.obstacles = []
@@ -237,11 +235,12 @@ def setup_scene():
     restAngle = 0.5
     angularVelocity = 10.0
     restitution = 0.0
-
+    pos1 = Vec2(0.26, 0.22)
+    pos2 = Vec2(0.74, 0.22)
     scene.flippers = [
         Flipper(
             radius,
-            Vec2(0.26, 0.22),
+            pos1,
             length,
             -restAngle,
             maxRotation,
@@ -250,7 +249,7 @@ def setup_scene():
         ),
         Flipper(
             radius,
-            Vec2(0.74, 0.22),
+            pos2,
             length,
             math.pi + restAngle,
             -maxRotation,
@@ -258,7 +257,7 @@ def setup_scene():
             restitution
         )
     ]
-#%%Drawng
+#%%Draw
 def draw_disc(x, y, radius, color):
     pygame.draw.circle(
         win,
@@ -334,3 +333,18 @@ def draw():
         draw_disc(x2, y2, flipper.radius, (255, 0, 0))
 
     pygame.display.flip()
+#%%MAIN LOOP
+
+setup_scene()
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    draw()
+
+    clock.tick(60)
+
+pygame.quit()
