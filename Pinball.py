@@ -87,7 +87,7 @@ def closest_point_on_segment(p: Vec2, a: Vec2, b: Vec2) -> Vec2:
     closest.add(ab, t)
     return closest
 
-#%%OBJECT - BALL
+#%%OBJECTS
 class Ball:
     def __init__(self, radius, mass, pos, vel, restitution):
         self.radius = radius
@@ -438,6 +438,9 @@ def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
     v_new = abs(v) * ball.restitution
     ball.vel.add(d, v_new - v)
 
+#%% Simulations
+
+def simulate():
 
 
 #%%MAIN LOOP
