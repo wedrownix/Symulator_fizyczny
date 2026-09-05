@@ -372,7 +372,8 @@ def handle_ball_obstacle_collision(ball: Ball, obstacle: Obstacle):
 def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
 
     closest = closest_point_on_segment(ball.pos, flipper.pos, flipper.getTip() )
-
+    dir = Vec2().subtractVectors(ball.pos, closest)
+    d = dir.length()
 
 
 
