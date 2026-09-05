@@ -382,7 +382,10 @@ def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
     ball.pos.add(dir, corr)
 
     #Teraz zajmę się zmianą prędkości
-
+    radius = closest.clone()
+    radius.add(dir, flipper.radius)
+    radius.subtract(flipper.pos)
+    
 
 
 
