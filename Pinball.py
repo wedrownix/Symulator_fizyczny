@@ -418,6 +418,12 @@ def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
             ab.subtractVectors(b, a)
             normal = ab.perp()
 
+    d = Vec2().subtractVectors(ball.pos, closest)
+    dist = d.length()
+    if dist == 0.0:
+        d.set(normal)
+        dist = normal.length()
+    d.scale(1.0 / dist)
 
 #%%MAIN LOOP
 
