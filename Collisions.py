@@ -120,10 +120,10 @@ def handle_ball_collision(b1: Ball, b2: Ball):
     if d == 0 or d > b1.radius + b2.radius:
         return
     #Należy skorygować położenie kul
-    dir.scale(1.0 / d)
+    dir.scale(1.0 / d) #skaluję wektor różnicy położeń obu obiektów, tak by dostać wektor kierunkowy
 
-    corr = (b1.radius + b2.radius - d) / 2.0
-    b1.pos.add(dir, -corr)
+    corr = (b1.radius + b2.radius - d) / 2.0 #Ponieważ kule są bliżej niż jest to fizycznie możliwe to je muszę rozdzielić po równo. corr to połowa oległości na jaką się nakładają te obiekty
+    b1.pos.add(dir, -corr) #dodaję połowę odległości nakładania się obiektów w kierunku osi zderzenia
     b2.pos.add(dir, corr)
 
     v1 = b1.vel.dot(dir) #Ustalam prędkość wzdłuż osi zderzenia - rzut prędkości całkowitej na oś zderzenia
