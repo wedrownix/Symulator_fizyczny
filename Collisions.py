@@ -117,7 +117,7 @@ def handle_ball_collision(b1: Ball, b2: Ball):
     dir = Vector2().subtractVectors(b2.pos, b1.pos)
     d = dir.length()
 
-    if d == 0 or d > b1.radius + b2.radius:
+    if d == 0 or d > b1.radius + b2.radius: #d==0, to wtedy jesli wylosuję kolizję tej samej kulki ze sobą
         return
     #Należy skorygować położenie kul
     dir.scale(1.0 / d) #skaluję wektor różnicy położeń obu obiektów, tak by dostać wektor kierunkowy
