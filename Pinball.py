@@ -2,7 +2,7 @@ import math
 import random
 import pygame
 pygame.init()
-
+from typing import List
 
 #%%TWORZENIE OKNA,
 screen_width = 1000
@@ -391,8 +391,18 @@ def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
     v = ball.vel.dot(dir)
     vnew = surface_Vel.dot(dir)
 
+    ball.vel.add(dir, vnew - v)
 
 
+def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
+
+    if border.length <3:
+        return
+    closest = Vec2()
+    ab = Vec2()
+    normal = Vec2()
+    min_dist = 0.0
+    dir = Vec2().subtractVectors(border.pos, ball.pos)
 
 
 
