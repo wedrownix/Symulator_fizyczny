@@ -367,7 +367,7 @@ def handle_ball_obstacle_collision(ball: Ball, obstacle: Obstacle):
     v = ball.vel.dot(dir)
     ball.vel.add(dir, obstacle.pushVel - v)
 
-    scene.score += 1
+    return True
 
 
 def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
@@ -397,7 +397,7 @@ def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
 
 def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
 
-    if len(scene.border) <3:
+    if len(border) <3:
         return
 
     closest = Vec2()
