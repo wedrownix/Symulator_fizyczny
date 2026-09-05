@@ -398,12 +398,23 @@ def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
 
     if border.length <3:
         return
+
     closest = Vec2()
     ab = Vec2()
     normal = Vec2()
     min_dist = 0.0
-    dir = Vec2().subtractVectors(border.pos, ball.pos)
 
+    for i in range(len(border)):
+        a = border[i]
+        b = border[(i + 1) % len(border)]
+        c = closest_point_on_segment(ball.pos, a, b)
+        d = Vec2().subtractVectors(ball.pos, c)
+        dist = d.length()
+        if i == 0 or dist < min_dist:
+            min_dist = dist
+            closest.set(c)
+            ab.subtractVectors(b, a)
+            normal = ab.perp()
 
 
 #%%MAIN LOOP
