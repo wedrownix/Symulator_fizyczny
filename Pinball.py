@@ -441,7 +441,8 @@ def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
 #%% Simulations
 
 def simulate():
-
+    for flipper in scene.flippers:
+        flipper.simulate(scene.dt)
 
 #%%MAIN LOOP
 
