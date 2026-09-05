@@ -443,6 +443,22 @@ def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
 def simulate():
     for flipper in scene.flippers:
         flipper.simulate(scene.dt)
+    for i, ball in enumerate(scene.balls):
+        ball.simulate(scene.gravity, scene.dt)
+
+        for other in scene.balls[i + 1:]:
+            handle_ball_ball_collision(ball, other)
+
+        for obstacle in scene.obstacles:
+            if handle_ball_obstacle_collision(ball, obstacle):
+                scene.score += 1
+
+        for flipper in scene.flippers:
+            handle_ball_flipper_collision(ball, flipper)
+
+        handle_ball_border_collision(ball, scene.border)
+
+
 
 #%%MAIN LOOP
 
@@ -453,9 +469,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+    simulate()
     draw()
-
     clock.tick(60)
 
 pygame.quit()
