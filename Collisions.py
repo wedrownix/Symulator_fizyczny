@@ -84,7 +84,7 @@ class PhysicsScene:
         self.dt = 1.0 / 60.0
         self.worldSize = Vector2(simWidth, simHeight)
         self.balls = []
-        self.restitution = 0.9
+        self.restitution = 0.99
 
 scene = PhysicsScene()
 
@@ -126,7 +126,7 @@ def handle_ball_collision(b1: Ball, b2: Ball):
     b1.pos.add(dir, -corr)
     b2.pos.add(dir, corr)
 
-    v1 = b1.vel.dot(dir)
+    v1 = b1.vel.dot(dir) #Ustalam prędkość wzdłuż osi zderzenia - rzut prędkości całkowitej na oś zderzenia
     v2 = b2.vel.dot(dir)
 
     m1 = b1.mass
