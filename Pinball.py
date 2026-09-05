@@ -196,7 +196,7 @@ def setup_scene():
 
     # Balls
 
-    radius = 0.03
+    radius = 0.08
     mass = math.pi * radius * radius
 
     scene.balls = [
@@ -461,7 +461,8 @@ def simulate():
 
 #%% KOMENDY
 keys = pygame.key.get_pressed()
-
+scene.flippers[0].touchIdentifier = 0 if keys[pygame.K_LEFT] else -1 # jeśli wciśnięty klawisz to zaczyna flipper przyśpieszać
+scene.flippers[1].touchIdentifier = 0 if keys[pygame.K_RIGHT] else -1
 #%%MAIN LOOP
 
 setup_scene()
