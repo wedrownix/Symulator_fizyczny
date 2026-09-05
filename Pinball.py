@@ -11,6 +11,8 @@ win = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("Pinball")
 clock = pygame.time.Clock()
 
+score_font = pygame.font.SysFont(None, 48)
+
 FLIPPER_HEIGHT = 1.7
 cScale = min(screen_width,screen_height)/FLIPPER_HEIGHT
 simWidth = screen_width/cScale
@@ -318,6 +320,11 @@ def draw():
         )
         draw_disc(x1, y1, flipper.radius, (255, 0, 0))
         draw_disc(x2, y2, flipper.radius, (255, 0, 0))
+
+    #rysuję ramkę
+    score_surface = score_font.render(f"Wynik: {scene.score}", True, (0, 0, 0))
+    win.blit(score_surface, (30, 30))
+
     pygame.display.flip()
 
 
