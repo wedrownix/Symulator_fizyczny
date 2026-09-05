@@ -374,12 +374,14 @@ def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
     closest = closest_point_on_segment(ball.pos, flipper.pos, flipper.getTip() )
     dir = Vec2().subtractVectors(ball.pos, closest)
     d = dir.length()
-    if d == 0 or d > ball.radius + flipper.radius
+    if d == 0 or d > ball.radius + flipper.radius:
         return
     dir.scale(1.0 / d)
 
     corr = ball.radius + flipper.radius - d
     ball.pos.add(dir, corr)
+
+    #Teraz zajmę się zmianą prędkości
 
 
 
