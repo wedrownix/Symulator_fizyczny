@@ -385,7 +385,11 @@ def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
     radius = closest.clone()
     radius.add(dir, flipper.radius)
     radius.subtract(flipper.pos)
-    
+    surface_Vel = radius.perp()
+    surface_Vel.scale(flipper.currentAngularVelocity)
+
+    v = ball.vel.dot(dir)
+    vnew = surface_Vel.dot(dir)
 
 
 
