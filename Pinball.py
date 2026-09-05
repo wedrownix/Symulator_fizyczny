@@ -85,7 +85,6 @@ def closest_point_on_segment(p: Vec2, a: Vec2, b: Vec2) -> Vec2:
 
     closest = a.clone()
     closest.add(ab, t)
-
     return closest
 
 #%%OBJECT - BALL
@@ -94,7 +93,6 @@ class Ball:
         self.radius = radius
         self.mass = mass
         self.restitution = restitution
-
         self.pos = pos.clone()
         self.vel = vel.clone()
 
@@ -127,7 +125,6 @@ class Flipper:
         self.sign = 1 if maxRotation >= 0 else -1 #znak odpowiadający za lewego i prawego flipera
         self.angularVelocity = angularVelocity #omega
         self.restitution = restitution #tłumienie
-
         # Parametry zmienne
         self.rotation = 0.0
         self.currentAngularVelocity = 0.0
@@ -135,7 +132,6 @@ class Flipper:
 
     def simulate(self, dt):
         previousRotation = self.rotation
-
         pressed = self.touchIdentifier >= 0
 
         if pressed:
@@ -165,10 +161,8 @@ class Flipper:
             math.cos(angle),
             math.sin(angle)
         )
-
         tip = self.pos.clone()
         tip.add(direction, self.length)
-
         return tip
 
 #%%WORLD
