@@ -403,7 +403,9 @@ def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
     ab = Vec2()
     normal = Vec2()
     min_dist = 0.0
-
+#Border to zamknięty wielokąt - lista wierzchołków, gdzie ostatni
+    # łączy się z pierwszym. Dla każdej krawędzi liczę najbliższy punkt
+    # do środka kuli i wybieram globalnie najbliższą krawędź.
     for i in range(len(border)):
         a = border[i]
         b = border[(i + 1) % len(border)]
