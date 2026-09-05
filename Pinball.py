@@ -342,10 +342,11 @@ def handle_ball_ball_collision(b1: Ball, b2: Ball):
     m1 = b1.mass
     m2 = b2.mass
     #Parametr zderzenia
-    r = scene.restitution
+    r1 = b1.restitution
+    r2 = b2.restitution
     #Wynik kolizji
-    newV1 = (m1*v1 + m2*v2 - m2*(v1 - v2)*r) / (m1 + m2)
-    newV2 = (m1*v1 + m2*v2 - m1*(v2 - v1)*r) / (m1 + m2)
+    newV1 = (m1*v1 + m2*v2 - m2*(v1 - v2)*r1) / (m1 + m2)
+    newV2 = (m1*v1 + m2*v2 - m1*(v2 - v1)*r2) / (m1 + m2)
 
     b1.vel.add(dir, newV1 - v1)
     b2.vel.add(dir, newV2 - v2)
@@ -458,7 +459,8 @@ def simulate():
 
         handle_ball_border_collision(ball, scene.border)
 
-
+#%% KOMENDY
+keys = pygame.key.get_pressed()
 
 #%%MAIN LOOP
 
