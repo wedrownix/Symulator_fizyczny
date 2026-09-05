@@ -396,7 +396,7 @@ def handle_ball_flipper_collision(ball: Ball, flipper:Flipper):
 
 def handle_ball_border_collision(ball: Ball, border: List[Vec2]):
 
-    if border.length <3:
+    if len(scene.border) <3:
         return
 
     closest = Vec2()
