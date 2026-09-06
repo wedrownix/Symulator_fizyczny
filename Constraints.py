@@ -44,12 +44,13 @@ class Bead:
         self.prevPos = pos.clone()
         self.vel = Vec2()
 
-#Funkcja
+#Funkcja, która pozwala kulce chwilowo wyjść poza ramy więzu, ale zapamiętuje jej ostatnie położenie na tym więzu
     def startStep(self,dt,gravity):
         self.vel.add(gravity,dt)
         self.prevPos.set(self.pos)
         self.pos.add(self.vel, dt)
 
+#Funkcja, która sprowadza kulkę z powrotem na więz,
     def  keepOnWire(self,center, radius):
         dir = Vec2()
         dir.subtractVectors(self.pos, center)
