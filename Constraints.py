@@ -50,7 +50,7 @@ class Bead:
         self.prevPos.set(self.pos)
         self.pos.add(self.vel, dt)
 
-#Funkcja, która sprowadza kulkę z powrotem na więz
+#Funkcja, która sprowadza kulkę z powrotem na więz,
     def  keepOnWire(self,center, radius):
         dir = Vec2()
         dir.subtractVectors(self.pos, center)
