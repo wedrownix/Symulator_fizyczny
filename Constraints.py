@@ -1,5 +1,5 @@
 import math
-import random
+import Vector2 as Vec2
 import pygame
 pygame.init()
 from typing import List
@@ -22,58 +22,6 @@ def cX(x):
 def cY(y):
     return screen_height - y *cScale
 
-#%% VECTOR
-import math
-
-
-class Vec2:
-    def __init__(self, x: float = 0.0, y: float = 0.0):
-        self.x = x
-        self.y = y
-
-    def set(self, v):
-        self.x = v.x
-        self.y = v.y
-
-    def clone(self):
-        return Vec2(self.x, self.y)
-
-    def add(self, v, s: float = 1.0):
-        self.x += v.x * s
-        self.y += v.y * s
-        return self
-
-    def addVectors(self, a, b):
-        self.x = a.x + b.x
-        self.y = a.y + b.y
-        return self
-
-    def subtract(self, v, s: float = 1.0):
-        self.x -= v.x * s
-        self.y -= v.y * s
-        return self
-
-    def subtractVectors(self, a, b):
-        self.x = a.x - b.x
-        self.y = a.y - b.y
-        return self
-
-    def length(self):
-        return math.sqrt(self.x * self.x + self.y * self.y)
-
-    def scale(self, s: float):
-        self.x *= s
-        self.y *= s
-        return self
-
-    def dot(self, v):
-        return self.x * v.x + self.y * v.y
-
-    def perp(self):
-        """Zwraca wektor prostopadły (-y, x)."""
-        return Vec2(-self.y, self.x)
-
-
 
 
 #%%WORLD
@@ -82,8 +30,24 @@ class PhysicsScene:
         self.gravity = Vec2(0, -10)
         self.dt = 1.0 / 60.0
         self.worldSize = Vec2(simWidth, simHeight)
+        self.wireCenter = Vec2()
+        self.wireRadius = 0.0
+        self.bead = None
 
 scene = PhysicsScene()
+
+class Bead:
+    def __init__(self, radius, mass, pos):
+        self.radius = radius
+        self.mass = mass
+        self.pos = pos.clone()
+        self.prevPos = pos.clone()
+        self.vel = Vec2()
+
+    def startStep(self,dt,gravity):
+        self.vel.add(gravity,dt)
+        self.prevPos.set(self.pos)
+        self.pos.add(self.vel, dt)
 
 
 #%%MAIN LOOP
