@@ -74,4 +74,26 @@ class Vec2:
         return Vec2(-self.y, self.x)
 
 
+#%%SET UP
+
+def setup_scene():
+
+
+#%%MAIN LOOP
+
+setup_scene()
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    simulate()
+    draw()
+
+    clock.tick(60)
+
+pygame.quit()
+
 
