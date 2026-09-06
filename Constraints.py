@@ -49,7 +49,9 @@ class Bead:
         self.prevPos.set(self.pos)
         self.pos.add(self.vel, dt)
 
-
+    def  keepOnWire(self,center, radius):
+        dir = Vec2()
+        dir.subtractVectors(self.pos, center)
 #%%MAIN LOOP
 
 setup_scene()
