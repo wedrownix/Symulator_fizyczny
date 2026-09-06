@@ -44,6 +44,7 @@ class Bead:
         self.prevPos = pos.clone()
         self.vel = Vec2()
 
+#Funkcja
     def startStep(self,dt,gravity):
         self.vel.add(gravity,dt)
         self.prevPos.set(self.pos)
@@ -52,6 +53,13 @@ class Bead:
     def  keepOnWire(self,center, radius):
         dir = Vec2()
         dir.subtractVectors(self.pos, center)
+        d = dir.length()
+        if d == 0:
+            return
+        dir.scale(1/d)
+        lam = PhysicsScene.wireRadius - d
+        self.pos.add(dir, lam)
+
 #%%MAIN LOOP
 
 setup_scene()
