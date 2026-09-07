@@ -105,10 +105,12 @@ scene = PhysicsScene()
 #%%SETUP SCENE
 
 def setup_scene():
-    scene.beads.clear()
-    lengths = [0.2, 0.2, 0.2];
-    masses = [1.0, 0.5, 0.3];
-    angles = [0.5 * math.pi, math.pi, math.pi];
+    lengths = [0.25, 0.25, 0.25]
+    masses = [1.0, 0.8, 0.5]
+    angles = [0.5 * math.pi, math.pi, math.pi]
+
+    scene.pendulum = Pendulum(masses, lengths, angles)
+    
 
 
 
