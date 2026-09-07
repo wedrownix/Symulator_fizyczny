@@ -142,7 +142,7 @@ def simulate():
                 handle_ball_ball_collision(scene.beads[i], scene.beads[j])
 
 def draw():
-    win.fill((30, 30, 30))
+    win.fill((0, 0, 0))
 
     # Rysowanie okręgu (drutu/więzu) - okrąg pusty w środku (width=2)
     wire_center_px = (cX(scene.wireCenter.x), cY(scene.wireCenter.y))
