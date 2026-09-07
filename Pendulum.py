@@ -38,35 +38,33 @@ scene = PhysicsScene()
 
 class Pendulum:
     def __init__(self, masses, lengths, angles):
-        self.masses = masses
-        self.number_objects = len(self.masses)
-        sz
+        self.masses = [0.0] + masses
+        self.lengths = lengths
         self.angles = angles
         self.pos = []
         self.prevPos = []
         self.vel = []
+        self.number_objects = len(self.masses)
         x = 0
         y = 0
-        v = Vec2()
+        v =
         for l,a in zip(lengths, angles):
             x += math.sin(a) * l
             y += -math.cos(a) * l
-            new_pos = v.set(x,y)
+            new_pos = Vec2(x,y)
             self.pos.append(new_pos)
             self.prevPos.append(new_pos)
-            self.vel.append(v)
+            self.vel.append(Vec2(0,0))
 
 
-#Funkcja, która pozwala kulce chwilowo wyjść poza ramy więzu, ale zapamiętuje jej ostatnie położenie na tym więzu
-    def startStep(self,dt,gravity):
-        for i in range (self.number_objects):
+    def startStep(self, dt, gravity):
+        for i in range (1, self.number_objects):
             self.vel[i].add(gravity, dt)
             #Prevpos jest już zapisane
             self.pos[i].add(self.vel[i], dt)
 
-#Funkcja, która sprowadza kulkę z powrotem na więz,
     def solveConstraints(self):
-       for i in range (self.number_objects):
+       for i in range (1, self.number_objects):
            delta = Vec2().subtractVectors(self.pos[i], self.pos[i - 1])
            d = delta.length()
            if d == 0.0:
@@ -82,7 +80,7 @@ class Pendulum:
            self.pos[i].add(delta, w1 * corr)
 
     def endStep(self, dt):
-        for i in range (self.number_objects):
+        for i in range (1, self.number_objects):
             self.vel[i].subtractVectors(self.pos[i], self.prevPos[i])
             self.vel[i].scale(1/dt)
 
