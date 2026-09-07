@@ -97,7 +97,6 @@ class PhysicsScene:
     def __init__(self):
         self.gravity = Vec2(0, -10)
         self.dt = 1.0 / 60.0
-        self.worldSize = Vec2(simWidth, simHeight)
         self.numSteps = 1000
         self.pendulum: Pendulum = None
 
