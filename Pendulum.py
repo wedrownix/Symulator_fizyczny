@@ -128,34 +128,6 @@ def draw():
         scene.pendulum.draw(win)
     pygame.display.update()
 
-
-
-#%% Symulacja i rysowanie
-
-def simulate():
-    sdt = scene.dt / scene.numSteps
-    for step in range(scene.numSteps):
-        #Na początek grawitacja
-        for bead in scene.beads:
-            bead.startStep(sdt, scene.gravity)
-        #Teraz sprowadzam na drut
-        for bead in scene.beads:
-            bead.keepOnWire(scene.wireCenter, scene.wireRadius)
-        #Na koniec wyznaczam nową prędkość
-        for bead in scene.beads:
-            bead.endStep(sdt)
-
-def draw():
-    win.fill((255, 255, 255))
-
-
-    pygame.display.update()
-
-
-
-
-
-
 #%%MAIN LOOP
 
 setup_scene()
