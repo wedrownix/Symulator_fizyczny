@@ -30,15 +30,14 @@ def cY(y):
 class Pendulum:
     def __init__(self, masses, lengths, angles):
         self.masses = [0.0] + masses
-        self.lengths = lengths
+        self.lengths = [0.0]+ lengths
         self.angles = angles
-        self.pos = []
-        self.prevPos = []
-        self.vel = []
+        self.pos = [Vec2(0,0)]
+        self.prevPos = [Vec2(0,0)]
+        self.vel = [Vec2(0,0)]
         self.number_objects = len(self.masses)
         x = 0
         y = 0
-        v =
         for l,a in zip(lengths, angles):
             x += math.sin(a) * l
             y += -math.cos(a) * l
@@ -76,7 +75,7 @@ class Pendulum:
             self.vel[i].scale(1/dt)
     def draw(self, surface: pygame.Surface):
         # 1. Rysowanie prętów wahadła
-        for i in range(1, self.num_segments):
+        for i in range(1, self.number_objects):
             p1 = (cX(self.pos[i - 1].x), cY(self.pos[i - 1].y))
             p2 = (cX(self.pos[i].x), cY(self.pos[i].y))
             pygame.draw.line(surface, (200, 200, 200), p1, p2, 4)
@@ -86,7 +85,7 @@ class Pendulum:
         pygame.draw.circle(surface, (255, 255, 255), p0, 6)
 
         # 3. Rysowanie kulek
-        for i in range(1, self.num_segments):
+        for i in range(1, self.number_objects):
             p = (cX(self.pos[i].x), cY(self.pos[i].y))
             r = int(cScale * 0.03 * math.sqrt(self.masses[i]))
             pygame.draw.circle(surface, (0, 200, 255), p, max(r, 5))
