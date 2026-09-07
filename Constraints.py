@@ -32,7 +32,8 @@ class PhysicsScene:
         self.worldSize = Vec2(simWidth, simHeight)
         self.wireCenter = Vec2()
         self.wireRadius = 0.0
-        self.bead = None
+        self.numSteps = 100
+        self.beads = []
 
 scene = PhysicsScene()
 
@@ -64,6 +65,13 @@ class Bead:
     def endStep(self, dt):
         self.vel.subtractVectors(self.pos, self.prevPos)
         self.vel.scale(1/dt)
+
+#%%SETUP SCENE
+
+def setup_scene():
+    PhysicsScene.wireCenter.x = simWidth / 2.0
+    PhysicsScene.wireCenter.y = simHeight / 2.0
+    PhysicsScene.wireRadius = simMinWidth * 0.4
 
 #%%MAIN LOOP
 
