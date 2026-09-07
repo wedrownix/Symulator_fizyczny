@@ -83,6 +83,7 @@ class Pendulum:
         for i in range (1, self.number_objects):
             self.vel[i].subtractVectors(self.pos[i], self.prevPos[i])
             self.vel[i].scale(1/dt)
+    def draw(self):
 
 
 
