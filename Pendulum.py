@@ -70,8 +70,8 @@ class Pendulum:
            delta = Vec2().subtractVectors(self.pos[i], self.pos[i - 1])
            d = Vec2().length(delta)
            if self.masses[i] and self.masses[i - 1]:
-           w0 = self.masses[i - 1]
-           w1 = self.masses[i]
+           w0 = 1 / self.masses[i - 1]
+           w1 = 1 / self.masses[i]
            corr = (self.lengths[i] - d) / d / (w0 + w1);
            self.pos[i-1].subtract(delta, w0*corr)
            self.pos[i].add(delta, w1*corr)
@@ -89,7 +89,7 @@ def setup_scene():
     scene.beads.clear()
     lengths = [0.2, 0.2, 0.2];
     masses = [1.0, 0.5, 0.3];
-    angles = [0.5 * math.PI, math.PI, math.PI];
+    angles = [0.5 * math.pi, math.pi, math.pi];
 
 
 
