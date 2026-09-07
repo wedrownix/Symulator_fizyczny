@@ -137,7 +137,7 @@ def simulate():
         #Kolizje
         for i in range(len(scene.beads)):
             for j in range(i):
-                handle_bead_bead_collision(scene.beads[i], scene.beads[j])
+                handle_ball_ball_collision(scene.beads[i], scene.beads[j])
 
 
 #%%MAIN LOOP
