@@ -60,7 +60,7 @@ class Pendulum:
     def startStep(self, dt, gravity):
         for i in range (1, self.number_objects):
             self.vel[i].add(gravity, dt)
-            #Prevpos jest już zapisane
+            self.prevPos[i].set(self.pos[i])
             self.pos[i].add(self.vel[i], dt)
 
     def solveConstraints(self):
