@@ -13,7 +13,7 @@ pygame.display.set_caption("Nauka_Symulatora")
 clock = pygame.time.Clock()
 
 
-simMinWidth = 20 #definiuje minimalną odległość obserwowaną na ekranie
+simMinWidth = 2 #definiuje minimalną odległość obserwowaną na ekranie
 cScale = min(screen_width,screen_height)/simMinWidth
 simWidth = screen_width/cScale
 simHeight = screen_height/cScale
@@ -97,7 +97,7 @@ class PhysicsScene:
     def __init__(self):
         self.gravity = Vec2(0, -10)
         self.dt = 1.0 / 60.0
-        self.numSteps = 1000
+        self.numSteps = 20
         self.pendulum: Pendulum = None
 
 scene = PhysicsScene()
