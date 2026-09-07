@@ -31,41 +31,54 @@ class PhysicsScene:
         self.gravity = Vec2(0, -10)
         self.dt = 1.0 / 60.0
         self.worldSize = Vec2(simWidth, simHeight)
-        self.wireCenter = Vec2()
-        self.wireRadius = 0.0
         self.numSteps = 1000
         self.beads = []
 
 scene = PhysicsScene()
 
-class Bead:
-    def __init__(self, radius, mass, pos):
-        self.radius = radius
-        self.mass = mass
-        self.pos = pos.clone()
-        self.prevPos = pos.clone()
-        self.vel = Vec2()
+class Pendulum:
+    def __init__(self, masses, lengths, angles):
+        self.masses = masses
+        self.number_objects = len(self.masses)
+        self.lengths = lengths
+        self.angles = angles
+        self.pos = []
+        self.prevPos = []
+        self.vel = []
+        x = 0
+        y = 0
+        v = Vec2()
+        for l,a in zip(lengths, angles):
+            x += math.sin(a) * l
+            y += -math.cos(a) * l
+            new_pos = v.set(x,y)
+            self.pos.append(new_pos)
+            self.prevPos.append(new_pos)
+            self.vel.append(v)
+
 
 #Funkcja, która pozwala kulce chwilowo wyjść poza ramy więzu, ale zapamiętuje jej ostatnie położenie na tym więzu
     def startStep(self,dt,gravity):
-        self.vel.add(gravity,dt)
-        self.prevPos.set(self.pos)
-        self.pos.add(self.vel, dt)
+        for i in range (self.number_objects):
+            self.vel[i].add(gravity, dt)
+            #Prevpos jest już zapisane
+            self.pos[i].add(self.vel[i], dt)
 
 #Funkcja, która sprowadza kulkę z powrotem na więz,
     def  keepOnWire(self,center, radius):
-        dir = Vec2()
-        dir.subtractVectors(self.pos, center)
-        d = dir.length()
-        if d == 0:
-            return
-        dir.scale(1/d)
-        lam = radius - d
-        self.pos.add(dir, lam)
-
-    def endStep(self, dt):
-        self.vel.subtractVectors(self.pos, self.prevPos)
-        self.vel.scale(1/dt)
+       for i in range (self.number_objects):
+           delta = Vec2().subtractVectors(self.pos[i], self.pos[i - 1])
+           d = Vec2().length(delta)
+           if self.masses[i] and self.masses[i - 1]:
+           w0 = self.masses[i - 1]
+           w1 = self.masses[i]
+           corr = (self.lengths[i] - d) / d / (w0 + w1);
+           self.pos[i-1].subtract(delta, w0*corr)
+           self.pos[i].add(delta, w1*corr)
+def endStep(self, dt):
+    for i in range (self.number_objects):
+        self.vel[i].subtractVectors(self.pos[i], self.prevPos[i])
+        self.vel[i].scale(1/dt)
 
 
 
@@ -77,23 +90,8 @@ def setup_scene():
     lengths = [0.2, 0.2, 0.2];
     masses = [1.0, 0.5, 0.3];
     angles = [0.5 * math.PI, math.PI, math.PI];
-    scene.wireCenter.x = simWidth / 2.0
-    scene.wireCenter.y = simHeight / 2.0
-    scene.wireRadius = simMinWidth * 0.4
 
-    num_beads = 5
-    r = 1
-    angle = 0.0
 
-    for i in range(num_beads):
-        mass = math.pi * r * r
-        pos = Vec2(
-            scene.wireCenter.x + scene.wireRadius * math.cos(angle),
-            scene.wireCenter.y + scene.wireRadius * math.sin(angle)
-        )
-        scene.beads.append(Bead(r, mass, pos))
-        angle += math.pi / num_beads
-        r = 0.75 + random.random() * 0.5
 
 #%% Symulacja i rysowanie
 
@@ -113,16 +111,6 @@ def simulate():
 def draw():
     win.fill((255, 255, 255))
 
-    # Rysowanie okręgu (drutu/więzu) - okrąg pusty w środku (width=2)
-    wire_center_px = (cX(scene.wireCenter.x), cY(scene.wireCenter.y))
-    wire_radius_px = int(scene.wireRadius * cScale)
-    pygame.draw.circle(win, (255, 0, 0), wire_center_px, wire_radius_px, width=2)
-
-    # Rysowanie kulek
-    for bead in scene.beads:
-        bead_center_px = (cX(bead.pos.x), cY(bead.pos.y))
-        bead_radius_px = int(bead.radius * cScale)
-        pygame.draw.circle(win, (255, 0, 0), bead_center_px, bead_radius_px)
 
     pygame.display.update()
 
