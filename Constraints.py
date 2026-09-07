@@ -61,6 +61,10 @@ class Bead:
         lam = PhysicsScene.wireRadius - d
         self.pos.add(dir, lam)
 
+    def endStep(self, dt):
+        self.vel.subtractVectors(self.pos, self.prevPos)
+        self.vel.scale(1/dt)
+
 #%%MAIN LOOP
 
 setup_scene()
