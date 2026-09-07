@@ -122,7 +122,7 @@ def setup_scene():
 
 #%% Symulacja i rysowanie
 
-def simute():
+def simulate():
     sdt = scene.dt / scene.numSteps
     for step in range(scene.numSteps):
         #Na początek grawitacja
@@ -130,7 +130,14 @@ def simute():
             bead.startStep(sdt, scene.gravity)
         #Teraz sprowadzam na drut
         for bead in scene.beads:
-
+            bead.keepOnWire(scene.wireCenter, scene.wireRadius)
+        #Na koniec wyznaczam nową prędkość
+        for bead in scene.beads:
+            bead.endStep(sdt)
+        #Kolizje
+        for i in range(len(scene.beads)):
+            for j in range(i):
+                handle_bead_bead_collision(scene.beads[i], scene.beads[j])
 
 
 #%%MAIN LOOP
