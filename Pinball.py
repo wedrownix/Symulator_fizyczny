@@ -199,7 +199,7 @@ def setup_scene():
 
     # Balls
 
-    radius = 0.08
+    radius = 0.04
     mass = math.pi * radius * radius
 
     scene.balls = [
@@ -222,10 +222,10 @@ def setup_scene():
     # Obstacles
 
     scene.obstacles = [
-        Obstacle(0.10, Vec2(0.25, 0.60), 2.0),
-        Obstacle(0.10, Vec2(0.75, 0.50), 2.0),
-        Obstacle(0.12, Vec2(0.70, 1.00), 2.0),
-        Obstacle(0.10, Vec2(0.20, 1.20), 2.0),
+        Obstacle(0.10, Vec2(0.25, 0.60), 2),
+        Obstacle(0.10, Vec2(0.75, 0.50), 2),
+        Obstacle(0.12, Vec2(0.70, 1.00), 2),
+        Obstacle(0.10, Vec2(0.20, 1.20), 2),
     ]
 
     # Flippers
@@ -476,7 +476,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:  # restart symulacji
+                setup_scene()
     keys = pygame.key.get_pressed()
     scene.flippers[0].touchIdentifier = 0 if keys[pygame.K_LEFT] else -1  # jeśli wciśnięty klawisz to zaczyna flipper przyśpieszać
     scene.flippers[1].touchIdentifier = 0 if keys[pygame.K_RIGHT] else -1
