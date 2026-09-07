@@ -1,5 +1,5 @@
 import math
-import Vector2 as Vec2
+from Vector2 import Vec2
 import pygame
 import random
 pygame.init()
