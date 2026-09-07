@@ -43,9 +43,8 @@ class Pendulum:
         for l,a in zip(lengths, angles):
             x += math.sin(a) * l
             y += -math.cos(a) * l
-            new_pos = Vec2(x,y)
-            self.pos.append(new_pos)
-            self.prevPos.append(new_pos)
+            self.pos.append(Vec2(x,y))
+            self.prevPos.append(Vec2(x,y))
             self.vel.append(Vec2(0,0))
 
 
@@ -105,9 +104,9 @@ scene = PhysicsScene()
 #%%SETUP SCENE
 
 def setup_scene():
-    lengths = [0.25, 0.25, 0.25]
-    masses = [1.0, 0.8, 0.5]
-    angles = [0.5 * math.pi, math.pi, math.pi]
+    lengths = [0.25, 0.25, 0.25, 0.25]
+    masses = [1.0, 0.8, 0.5, 0.7]
+    angles = [0.5 * math.pi, math.pi, math.pi, math.pi]
 
     scene.pendulum = Pendulum(masses, lengths, angles)
 
