@@ -66,6 +66,38 @@ class Bead:
         self.vel.subtractVectors(self.pos, self.prevPos)
         self.vel.scale(1/dt)
 
+
+
+#%%COLISIONS
+def handle_ball_ball_collision(b1: Ball, b2: Ball):
+    #Badam różnicę między odległościami
+    dir = Vec2().subtractVectors(b2.pos, b1.pos)
+    d = dir.length()
+
+    if d == 0 or d > b1.radius + b2.radius: #d==0, to wtedy jesli wylosuję kolizję tej samej kulki ze sobą
+        return
+    #Należy skorygować położenie kul
+    dir.scale(1.0 / d) #skaluję wektor różnicy położeń obu obiektów, tak by dostać wektor kierunkowy
+
+    corr = (b1.radius + b2.radius - d) / 2.0 #Ponieważ kule są bliżej niż jest to fizycznie możliwe to je muszę rozdzielić po równo. corr to połowa oległości na jaką się nakładają te obiekty
+    b1.pos.add(dir, -corr) #dodaję połowę odległości nakładania się obiektów w kierunku osi zderzenia
+    b2.pos.add(dir, corr)
+
+    v1 = b1.vel.dot(dir) #Ustalam prędkość wzdłuż osi zderzenia - rzut prędkości całkowitej na oś zderzenia
+    v2 = b2.vel.dot(dir)
+
+    m1 = b1.mass
+    m2 = b2.mass
+    #Parametr zderzenia
+    r1 = b1.restitution
+    r2 = b2.restitution
+    #Wynik kolizji
+    newV1 = (m1*v1 + m2*v2 - m2*(v1 - v2)*r1) / (m1 + m2)
+    newV2 = (m1*v1 + m2*v2 - m1*(v2 - v1)*r2) / (m1 + m2)
+
+    b1.vel.add(dir, newV1 - v1)
+    b2.vel.add(dir, newV2 - v2)
+
 #%%SETUP SCENE
 
 def setup_scene():
