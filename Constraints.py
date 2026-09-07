@@ -45,6 +45,7 @@ class Bead:
         self.pos = pos.clone()
         self.prevPos = pos.clone()
         self.vel = Vec2()
+        self.restitution = 1.0
 
 #Funkcja, która pozwala kulce chwilowo wyjść poza ramy więzu, ale zapamiętuje jej ostatnie położenie na tym więzu
     def startStep(self,dt,gravity):
@@ -60,7 +61,7 @@ class Bead:
         if d == 0:
             return
         dir.scale(1/d)
-        lam = PhysicsScene.wireRadius - d
+        lam = radius - d
         self.pos.add(dir, lam)
 
     def endStep(self, dt):
@@ -102,9 +103,9 @@ def handle_ball_ball_collision(b1: Bead, b2: Bead):
 #%%SETUP SCENE
 
 def setup_scene():
-    PhysicsScene.wireCenter.x = simWidth / 2.0
-    PhysicsScene.wireCenter.y = simHeight / 2.0
-    PhysicsScene.wireRadius = simMinWidth * 0.4
+    scene.wireCenter.x = simWidth / 2.0
+    scene.wireCenter.y = simHeight / 2.0
+    scene.wireRadius = simMinWidth * 0.4
 
     num_beads = 5
     r = 0.1
