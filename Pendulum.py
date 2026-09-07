@@ -83,8 +83,22 @@ class Pendulum:
         for i in range (1, self.number_objects):
             self.vel[i].subtractVectors(self.pos[i], self.prevPos[i])
             self.vel[i].scale(1/dt)
-    def draw(self):
+    def draw(self, surface: pygame.Surface):
+        # 1. Rysowanie prętów wahadła
+        for i in range(1, self.num_segments):
+            p1 = (cX(self.pos[i - 1].x), cY(self.pos[i - 1].y))
+            p2 = (cX(self.pos[i].x), cY(self.pos[i].y))
+            pygame.draw.line(surface, (200, 200, 200), p1, p2, 4)
 
+        # 2. Rysowanie nieruchomego punktu zakotwiczenia
+        p0 = (cX(self.pos[0].x), cY(self.pos[0].y))
+        pygame.draw.circle(surface, (255, 255, 255), p0, 6)
+
+        # 3. Rysowanie kulek
+        for i in range(1, self.num_segments):
+            p = (cX(self.pos[i].x), cY(self.pos[i].y))
+            r = int(cScale * 0.03 * math.sqrt(self.masses[i]))
+            pygame.draw.circle(surface, (0, 200, 255), p, max(r, 5))
 
 
 
