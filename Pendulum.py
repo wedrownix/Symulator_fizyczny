@@ -25,16 +25,7 @@ def cY(y):
 
 
 
-#%%WORLD
-class PhysicsScene:
-    def __init__(self):
-        self.gravity = Vec2(0, -10)
-        self.dt = 1.0 / 60.0
-        self.worldSize = Vec2(simWidth, simHeight)
-        self.numSteps = 1000
-        self.beads = []
-
-scene = PhysicsScene()
+#%%PENDULUM
 
 class Pendulum:
     def __init__(self, masses, lengths, angles):
@@ -100,7 +91,16 @@ class Pendulum:
             r = int(cScale * 0.03 * math.sqrt(self.masses[i]))
             pygame.draw.circle(surface, (0, 200, 255), p, max(r, 5))
 
+#%%WORLD
+class PhysicsScene:
+    def __init__(self):
+        self.gravity = Vec2(0, -10)
+        self.dt = 1.0 / 60.0
+        self.worldSize = Vec2(simWidth, simHeight)
+        self.numSteps = 1000
+        self.pendulum: Pendulum = None
 
+scene = PhysicsScene()
 
 #%%SETUP SCENE
 
