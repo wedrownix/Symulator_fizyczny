@@ -119,6 +119,20 @@ def setup_scene():
         scene.beads.append(Bead(r, mass, pos))
         angle += math.pi / num_beads
         r = 0.05 + random.random() * 0.1
+
+#%% Symulacja i rysowanie
+
+def simute():
+    sdt = scene.dt / scene.numSteps
+    for step in range(scene.numSteps):
+        #Na początek grawitacja
+        for bead in scene.beads:
+            bead.startStep(sdt, scene.gravity)
+        #Teraz sprowadzam na drut
+        for bead in scene.beads:
+
+
+
 #%%MAIN LOOP
 
 setup_scene()
