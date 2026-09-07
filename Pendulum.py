@@ -18,10 +18,12 @@ cScale = min(screen_width,screen_height)/simMinWidth
 simWidth = screen_width/cScale
 simHeight = screen_height/cScale
 
-def cX(x):
-    return x *cScale
-def cY(y):
-    return screen_height - y *cScale
+# Transformacja współrzędnych fizycznych na piksele ekranu
+def cX(x: float) -> int:
+    return int(screen_width / 2 + x * cScale)
+
+def cY(y: float) -> int:
+    return int(screen_height * 0.3 - y * cScale)
 
 
 
