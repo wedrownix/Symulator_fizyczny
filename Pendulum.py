@@ -110,8 +110,12 @@ def setup_scene():
     angles = [0.5 * math.pi, math.pi, math.pi]
 
     scene.pendulum = Pendulum(masses, lengths, angles)
-    
 
+def simulate():
+    if not scene.pendulum:
+        return
+
+    sdt = scene.dt / scene.numSteps
 
 
 #%% Symulacja i rysowanie
