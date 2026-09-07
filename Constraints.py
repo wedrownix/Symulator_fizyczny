@@ -139,6 +139,26 @@ def simulate():
             for j in range(i):
                 handle_ball_ball_collision(scene.beads[i], scene.beads[j])
 
+def draw():
+    win.fill((30, 30, 30))
+
+    # Rysowanie okręgu (drutu/więzu) - okrąg pusty w środku (width=2)
+    wire_center_px = (cX(scene.wireCenter.x), cY(scene.wireCenter.y))
+    wire_radius_px = int(scene.wireRadius * cScale)
+    pygame.draw.circle(win, (255, 0, 0), wire_center_px, wire_radius_px, width=2)
+
+    # Rysowanie kulek
+    for bead in scene.beads:
+        bead_center_px = (cX(bead.pos.x), cY(bead.pos.y))
+        bead_radius_px = int(bead.radius * cScale)
+        pygame.draw.circle(win, (255, 0, 0), bead_center_px, bead_radius_px)
+
+    pygame.display.update()
+
+
+
+
+
 
 #%%MAIN LOOP
 
