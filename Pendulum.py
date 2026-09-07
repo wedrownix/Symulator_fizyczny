@@ -117,6 +117,12 @@ def simulate():
 
     sdt = scene.dt / scene.numSteps
 
+    for step in range(scene.numSteps):
+        scene.pendulum.startStep(sdt, scene.gravity)
+        scene.pendulum.solveConstraints()
+        scene.pendulum.endStep(sdt)
+
+
 
 #%% Symulacja i rysowanie
 
