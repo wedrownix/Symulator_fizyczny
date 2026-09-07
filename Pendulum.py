@@ -1,22 +1,17 @@
 import math
 from Vector2 import Vec2
 import pygame
-import random
 pygame.init()
-from typing import List
 
 #%%TWORZENIE OKNA,
 screen_width = 1000
 screen_height = 700
 win = pygame.display.set_mode((screen_width,screen_height))
-pygame.display.set_caption("Nauka_Symulatora")
+pygame.display.set_caption("Wachadło")
 clock = pygame.time.Clock()
-
 
 simMinWidth = 2 #definiuje minimalną odległość obserwowaną na ekranie
 cScale = min(screen_width,screen_height)/simMinWidth
-simWidth = screen_width/cScale
-simHeight = screen_height/cScale
 
 # Transformacja współrzędnych fizycznych na piksele ekranu
 def cX(x: float) -> int:
@@ -74,6 +69,7 @@ class Pendulum:
         for i in range (1, self.number_objects):
             self.vel[i].subtractVectors(self.pos[i], self.prevPos[i])
             self.vel[i].scale(1/dt)
+
     def draw(self, surface: pygame.Surface):
         # 1. Rysowanie prętów wahadła
         for i in range(1, self.number_objects):
@@ -104,9 +100,9 @@ scene = PhysicsScene()
 #%%SETUP SCENE
 
 def setup_scene():
-    lengths = [0.25, 0.25, 0.25, 0.25]
-    masses = [1.0, 0.8, 0.5, 0.7]
-    angles = [0.5 * math.pi, math.pi, math.pi, math.pi]
+    lengths = [0.25, 0.25, 0.25]
+    masses = [1.0, 0.8, 0.5]
+    angles = [0.5 * math.pi, math.pi, math.pi]
 
     scene.pendulum = Pendulum(masses, lengths, angles)
 
@@ -143,7 +139,6 @@ while running:
 
     simulate()
     draw()
-
     clock.tick(60)
 
 pygame.quit()
