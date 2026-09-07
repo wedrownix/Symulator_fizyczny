@@ -122,6 +122,12 @@ def simulate():
         scene.pendulum.solveConstraints()
         scene.pendulum.endStep(sdt)
 
+def draw():
+    win.fill((20, 20, 20))
+    if scene.pendulum:
+        scene.pendulum.draw(win)
+    pygame.display.update()
+
 
 
 #%% Symulacja i rysowanie
