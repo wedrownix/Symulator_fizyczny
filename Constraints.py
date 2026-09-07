@@ -33,7 +33,7 @@ class PhysicsScene:
         self.worldSize = Vec2(simWidth, simHeight)
         self.wireCenter = Vec2()
         self.wireRadius = 0.0
-        self.numSteps = 100
+        self.numSteps = 1000
         self.beads = []
 
 scene = PhysicsScene()
@@ -103,12 +103,13 @@ def handle_ball_ball_collision(b1: Bead, b2: Bead):
 #%%SETUP SCENE
 
 def setup_scene():
+    scene.beads.clear()
     scene.wireCenter.x = simWidth / 2.0
     scene.wireCenter.y = simHeight / 2.0
     scene.wireRadius = simMinWidth * 0.4
 
     num_beads = 5
-    r = 0.1
+    r = 1
     angle = 0.0
 
     for i in range(num_beads):
@@ -119,7 +120,7 @@ def setup_scene():
         )
         scene.beads.append(Bead(r, mass, pos))
         angle += math.pi / num_beads
-        r = 0.05 + random.random() * 0.1
+        r = 0.75 + random.random() * 0.5
 
 #%% Symulacja i rysowanie
 
@@ -171,7 +172,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r:  # restart symulacji
+            if event.key == pygame.K_SPACE:  # restart symulacji
                 setup_scene()
 
 
