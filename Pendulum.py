@@ -65,7 +65,7 @@ class Pendulum:
             self.pos[i].add(self.vel[i], dt)
 
 #Funkcja, która sprowadza kulkę z powrotem na więz,
-    def  keepOnWire(self,center, radius):
+    def solveConstraints(self):
        for i in range (self.number_objects):
            delta = Vec2().subtractVectors(self.pos[i], self.pos[i - 1])
            d = delta.length()
@@ -74,14 +74,13 @@ class Pendulum:
                # Masy odwrotne (w = 1/m). Masa 0 = nieskończona masa (punkt stały)
            w0 = 1.0 / self.masses[i - 1] if self.masses[i - 1] > 0.0 else 0.0
            w1 = 1.0 / self.masses[i] if self.masses[i] > 0.0 else 0.0
-
            if w0 + w1 == 0.0:
                continue
            # Korekta pozycji w celu zachowania długości odcinka
            corr = (self.lengths[i] - d) / d / (w0 + w1)
-
            self.pos[i - 1].subtract(delta, w0 * corr)
            self.pos[i].add(delta, w1 * corr)
+
     def endStep(self, dt):
         for i in range (self.number_objects):
             self.vel[i].subtractVectors(self.pos[i], self.prevPos[i])
