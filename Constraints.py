@@ -1,6 +1,7 @@
 import math
 import Vector2 as Vec2
 import pygame
+import random
 pygame.init()
 from typing import List
 
@@ -69,7 +70,7 @@ class Bead:
 
 
 #%%COLISIONS
-def handle_ball_ball_collision(b1: Ball, b2: Ball):
+def handle_ball_ball_collision(b1: Bead, b2: Bead):
     #Badam różnicę między odległościami
     dir = Vec2().subtractVectors(b2.pos, b1.pos)
     d = dir.length()
@@ -105,6 +106,19 @@ def setup_scene():
     PhysicsScene.wireCenter.y = simHeight / 2.0
     PhysicsScene.wireRadius = simMinWidth * 0.4
 
+    num_beads = 5
+    r = 0.1
+    angle = 0.0
+
+    for i in range(num_beads):
+        mass = math.pi * r * r
+        pos = Vec2(
+            scene.wireCenter.x + scene.wireRadius * math.cos(angle),
+            scene.wireCenter.y + scene.wireRadius * math.sin(angle)
+        )
+        scene.beads.append(Bead(r, mass, pos))
+        angle += math.pi / num_beads
+        r = 0.05 + random.random() * 0.1
 #%%MAIN LOOP
 
 setup_scene()
