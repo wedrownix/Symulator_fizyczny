@@ -95,10 +95,7 @@ pygame.init()
 # =============================================================================
 # %% 1. WEKTOR 2D
 # =============================================================================
-from Vector2_finally import Vec2
-
-def normalizeAngle(a: float) -> float:
-    return (a + math.pi) % (2.0 * math.pi) - math.pi
+from Vector2_finally import Vec2, normalizeAngle
 # =============================================================================
 # %% 2. ZABEZPIECZENIA NUMERYCZNE
 # =============================================================================
@@ -278,7 +275,7 @@ class Joint:
 
         # --- MONTAŻ: przeliczenie punktu i kąta na układy lokalne obu ciał.
         # Robione dokładnie raz. Od tej chwili złącze "trzyma się" ciał.
-        self.localPos0 = body0.worldToLocal(anchor) #umieszczam w boy0 na stałe mój więz - we współrzędnych lokalnych
+        self.localPos0 = body0.worldToLocal(anchor) #umieszczam w body0 na stałe mój więz - we współrzędnych lokalnych
         self.localPos1 = body1.worldToLocal(anchor)
         self.localRot0 = frameAngle - body0.rot
         self.localRot1 = frameAngle - body1.rot

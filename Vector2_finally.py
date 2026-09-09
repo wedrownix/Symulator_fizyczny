@@ -54,3 +54,6 @@ class Vec2:
 
     def isFinite(self) -> bool:
         return math.isfinite(self.x) and math.isfinite(self.y)
+
+def normalizeAngle(a: float) -> float:
+    return (a + math.pi) % (2.0 * math.pi) - math.pi

@@ -4,10 +4,9 @@ from typing import List, Optional
 # =============================================================================
 # %% 1. WEKTOR 2D
 # =============================================================================
-from Vector2_finally import Vec2
+from Vector2_finally import Vec2, normalizeAngle
 
-def normalizeAngle(a: float) -> float:
-    return (a + math.pi) % (2.0 * math.pi) - math.pi
+
 
 # =============================================================================
 # %% 2. ZABEZPIECZENIA NUMERYCZNE
