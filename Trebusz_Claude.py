@@ -44,6 +44,43 @@ inertia= ręcznie: I = suma(I_i + m_i * d_i^2).
 UWAGA: z tablic bierzemy zawsze wersję WZGLĘDEM ŚRODKA (pręt: mL^2/12),
 nigdy względem końca (mL^2/3) - resztę dołoży solver.
 
+DLACZEGO LINKI SIĘ ROZCIĄGAJĄ (najważniejsze przy strojeniu sceny)
+------------------------------------------------------------------
+Więz o compliance = 0 jest w teorii nierozciągliwy, ale solver jest typu
+Gauss-Seidel: przechodzi po więzach po kolei, jeden po drugim. Zbieżność
+takiego przechodzenia psuje się dramatycznie, gdy sąsiednie ciała mają
+skrajnie różne masy - lekkie ogniwo nie jest w stanie zatrzymać ciężkiego
+ładunku w jednym przejściu i lina "gumuje".
+
+Zmierzone na scenie z ładunkiem 100 kg, lina z 5 ogniw, 40 podkroków:
+
+    masa ogniwa      maks. rozciągnięcie liny
+    0.001 kg              169 %          <- to był Twój przypadek
+    0.01  kg               16 %
+    0.1   kg                1.2 %
+    0.5   kg                0.17 %
+    2.0   kg                0.04 %
+
+    liczba podkroków (masa ogniwa 0.01 kg):   20 -> 66 %,  40 -> 16 %,
+                                             100 -> 2.4 %, 200 -> 0.55 %
+    liczba iteracji  (masa ogniwa 0.01 kg):    1 -> 16 %,    2 -> 7.7 %,
+                                               4 -> 3.6 %,   8 -> 1.6 %
+    liczba ogniw     (masa ogniwa 1 kg):       2 -> 0.03 %, 20 -> 0.43 %
+
+CZTERY POKRĘTŁA, w kolejności od najskuteczniejszego:
+
+ 1. nodeMass w connectRopeChain  -- REGUŁA KCIUKA: masa ogniwa nie mniejsza
+    niż 1/100 masy ładunku (dla 0.1 % błędu: 1/20). Najtańsze i najskuteczniejsze.
+ 2. World.numSubSteps            -- błąd maleje mniej więcej jak 1/n^2,
+    koszt rośnie liniowo.
+ 3. World.numIterations          -- dodatkowe przejścia po więzach w jednym
+    podkroku; działa słabiej niż podkroki przy tym samym koszcie.
+ 4. numNodes                     -- każde ogniwo to kolejne "kolanko" do
+    przepchnięcia informacji o sile, więc mniej ogniw = sztywniej.
+
+Compliance zostawiamy 0.0 - dodatnia compliance rozciąga linę CELOWO
+(to sprężyna) i nie jest lekarstwem na problem zbieżności.
+
 Sterowanie: SPACJA pauza, R restart, ESC wyjście.
 ===============================================================================
 """
@@ -431,79 +468,166 @@ class PointMass(Body):
 
 class Joint:
     """
-    Klasa bazowa. Wzorzec Metoda Szablonowa:
-        solve() = solvePosition() + solveOrientation()
-    a podklasy składają się z gotowych klocków ze slajdów:
-        attach()      = Attach(p1, p2, d_rest, alpha)
-        alignAngle()  = AlignAxes(a1, a2, alpha)      (w 2D: wyrównanie kątów)
-        limitAngle()  = LimitAngle(n, a1, a2, min, max, alpha)
+    ===========================================================================
+    KLASA BAZOWA WSZYSTKICH ZŁĄCZY - jak to działa
+    ===========================================================================
 
-    RAMKI ZACZEPIENIA (slajd "Attachment Frames"):
-    punkt i kąt złącza podajemy RAZ, w układzie świata, przy tworzeniu.
-    Konstruktor zapamiętuje je lokalnie w obu ciałach (localPos/localRot),
-    więc potem jeżdżą razem z ciałami za darmo. updateGlobalFrames()
-    odtwarza aktualne położenie tych ramek w świecie.
+    IDEA
+    ----
+    Złącze nie jest obiektem fizycznym. To REGUŁA, którą solver wymusza na
+    dwóch ciałach po tym, jak poleciały one swobodnie w kroku integracji.
+    Każde złącze umie odpowiedzieć na dwa pytania:
+        "o ile te dwa punkty się rozjechały?"   -> solvePosition()
+        "o ile te dwa kąty się rozjechały?"     -> solveOrientation()
+    i zlecić poprawkę. Poprawki liczą dwie funkcje globalne
+    (applyLinearCorrection / applyAngularCorrection), więc sama klasa Joint
+    nie zawiera ani jednego wzoru XPBD - tylko decyduje, CO ma być poprawione.
+
+    DWA UKŁADY WSPÓŁRZĘDNYCH (slajd "Attachment Frames")
+    ----------------------------------------------------
+    Punkt zaczepienia podajesz RAZ, przy tworzeniu złącza, w układzie świata
+    (np. "zawias jest w (0, 2.2)"). Konstruktor natychmiast przelicza go na
+    współrzędne LOKALNE obu ciał (localPos0, localPos1) i tylko te zapamiętuje.
+
+        localPos = worldToLocal(anchor)      <- raz, przy montażu
+        globalPos = localToWorld(localPos)   <- co podkrok, w updateGlobalFrames
+
+    Dzięki temu punkt zaczepienia "jeździ" razem z ciałem za darmo: gdy belka
+    się obróci, jej lokalny punkt (0.9, 0) sam wyląduje w nowym miejscu świata.
+    To samo dotyczy kątów: localRot to kąt ramki złącza względem własnego kąta
+    ciała, a globalRot = body.rot + localRot.
+
+    DWIE RAMKI, NIE JEDNA
+    ---------------------
+    Każde złącze ma DWIE ramki: jedną przyklejoną do body0, drugą do body1.
+    W chwili montażu obie leżą w tym samym miejscu i mają ten sam kąt.
+    Podczas symulacji rozjeżdżają się - i właśnie ten rozjazd
+    (globalPos1 - globalPos0, globalRot1 - globalRot0) jest naruszeniem więzu,
+    które solver kasuje. Cała reszta klasy to tylko różne sposoby mierzenia
+    tego rozjazdu.
+
+    KONWENCJA ZNAKU (jedna dla całego silnika)
+    ------------------------------------------
+    corr = wielkość, o którą ma ZMALEĆ różnica (wartość_ciała_1 - wartość_ciała_0).
+    Ciało 0 dostaje korektę "+", ciało 1 "-". Ta sama umowa obowiązuje dla
+    pozycji, kątów i tłumienia, dzięki czemu podklasy nie muszą myśleć o znakach.
+
+    WZORZEC: METODA SZABLONOWA
+    --------------------------
+    solve() ma ustaloną strukturę (najpierw pozycja, potem orientacja), a to,
+    CO się w tych krokach dzieje, dopisują podklasy. Klasa bazowa daje im do
+    tego gotowe klocki ze slajdów Müllera:
+
+        attach()      = Attach       - trzymaj punkty w zadanej odległości
+        alignAngle()  = AlignAxes    - trzymaj zadany kąt względny
+        limitAngle()  = LimitAngle   - trzymaj kąt w przedziale
+        dampLinear/dampAngular       - tłumienie na poziomie prędkości
+
+    Stąd definicje złączy są jednolinijkowe:
+        linka   = attach(length, unilateral=True)
+        zawias  = attach(0) [+ limitAngle(...)]
+        spaw    = attach(0) + alignAngle(restAngle)
+    Dodanie nowego złącza (np. suwaka) nie wymaga dotykania solvera - wystarczy
+    złożyć inne klocki. To jest sens dziedziczenia po tej klasie.
     """
 
     def __init__(self, body0: Body, body1: Body, anchor: Vec2,
                  frameAngle: float = 0.0):
         self.body0 = body0
         self.body1 = body1
-        self.disabled = False
+        self.disabled = False        # True -> złącze pomijane (np. zwolnienie)
 
+        # --- MONTAŻ: przeliczenie punktu i kąta na układy lokalne obu ciał.
+        # Robione dokładnie raz. Od tej chwili złącze "trzyma się" ciał.
         self.localPos0 = body0.worldToLocal(anchor)
         self.localPos1 = body1.worldToLocal(anchor)
         self.localRot0 = frameAngle - body0.rot
         self.localRot1 = frameAngle - body1.rot
 
+        # --- bufory na aktualne (globalne) położenia ramek; odświeżane
+        # w updateGlobalFrames() i czytane potem przez solver i rysowanie
         self.globalPos0 = anchor.clone()
         self.globalPos1 = anchor.clone()
         self.globalRot0 = frameAngle
         self.globalRot1 = frameAngle
 
-        self.force = 0.0          # ostatnia siła więzu [N]
-        self.torque = 0.0         # ostatni moment więzu [Nm]
-        self.elongation = 0.0     # ostatnie wydłużenie [m]
+        # --- diagnostyka: co ostatnio "kosztowało" utrzymanie tego złącza
+        self.force = 0.0          # siła więzu [N]   = lambda/dt^2
+        self.torque = 0.0         # moment więzu [Nm]
+        self.elongation = 0.0     # rozjazd punktów ponad długość spoczynkową [m]
 
     def updateGlobalFrames(self) -> None:
+        """Gdzie SĄ TERAZ obie ramki zaczepienia.
+
+        Wołane na początku każdego klocka (attach/alignAngle/limitAngle), a nie
+        raz na podkrok - i to jest celowe: klocki wykonują się po kolei, każdy
+        zmienia pozycje ciał, więc drugi klocek musi patrzeć na stan już
+        poprawiony przez pierwszy. To jest istota metody Gaussa-Seidla."""
         self.globalPos0 = self.body0.localToWorld(self.localPos0)
         self.globalPos1 = self.body1.localToWorld(self.localPos1)
         self.globalRot0 = self.body0.rot + self.localRot0
         self.globalRot1 = self.body1.rot + self.localRot1
 
     def relativeAngle(self) -> float:
+        """Kąt między ramkami, sprowadzony do (-pi, pi].
+
+        Normalizacja jest konieczna, bo body.rot rośnie bez ograniczeń (koło,
+        które zrobiło 10 obrotów, ma rot = 62.8). Bez niej różnica kątów
+        wyszłaby np. 6.2 zamiast -0.08 i spaw szarpnąłby ciałem o pełny obrót."""
         return normalizeAngle(self.globalRot1 - self.globalRot0)
 
     # ---- szablon --------------------------------------------------------
     def solve(self) -> None:
+        """METODA SZABLONOWA: stały scenariusz, zmienna treść.
+
+        Kolejność ma znaczenie: najpierw ustawiamy punkty (pozycja), potem
+        kąty (orientacja). Odwrotna kolejność też by działała, ale zbiegałaby
+        wolniej - poprawka kątowa przesuwa punkty zaczepienia, więc lepiej
+        żeby to ona była ostatnia."""
         if self.disabled:
             return
         self.solvePosition()
         self.solveOrientation()
 
     def solvePosition(self) -> None:
+        """Do nadpisania: więzy na POŁOŻENIE punktów zaczepienia."""
         pass
 
     def solveOrientation(self) -> None:
+        """Do nadpisania: więzy na KĄT względny ciał."""
         pass
 
     def solveVelocity(self, dt: float) -> None:
+        """Do nadpisania: korekty na POZIOMIE PRĘDKOŚCI (tłumienie, napędy).
+        Wołane po updateVelocities, czyli gdy prędkości są już policzone."""
         pass
 
-    # ---- klocki ---------------------------------------------------------
+    # ---- klocki (Building Blocks ze slajdów) ----------------------------
     def attach(self, restDistance: float = 0.0, compliance: float = 0.0,
                unilateral: bool = False) -> None:
-        """Attach(p1, p2, d_rest, alpha): trzyma punkty zaczepienia
-        w odległości restDistance. restDistance = 0 -> punkty się pokrywają.
-        unilateral = True -> linka (działa tylko na rozciąganie)."""
+        """Attach(p1, p2, d_rest, alpha) - trzyma punkty zaczepienia
+        w odległości restDistance.
+
+            restDistance = 0     -> punkty mają się pokrywać (zawias, spaw)
+            restDistance = L     -> odległość dokładnie L (pręt, linka)
+            unilateral = True    -> więz jednostronny: działa tylko gdy
+                                    odległość jest ZA DUŻA. Tak zachowuje się
+                                    lina: można ją zwinąć, nie można rozciągnąć.
+
+        Krok po kroku:
+            d           wektor od punktu na ciele 0 do punktu na ciele 1
+            elongation  o ile ten wektor jest dłuższy niż ma być (to jest C)
+            corr        wektor o długości C, skierowany wzdłuż d -> tyle ma
+                        zniknąć z różnicy (pozycja1 - pozycja0)
+        """
         self.updateGlobalFrames()
         d = Vec2().subtractVectors(self.globalPos1, self.globalPos0)
         dist = d.length()
         if dist == 0.0:
-            return
+            return                      # punkty się pokrywają - nie ma kierunku
         self.elongation = dist - restDistance
         if unilateral and self.elongation < 0.0:
-            self.force = 0.0
+            self.force = 0.0            # lina luźna - żadnej siły
             return
         corr = d.scale(self.elongation / dist)
         self.force = applyLinearCorrection(corr, self.body0, self.globalPos0,
@@ -511,7 +635,15 @@ class Joint:
                                            compliance)
 
     def alignAngle(self, targetAngle: float = 0.0, compliance: float = 0.0) -> None:
-        """AlignAxes: wymusza zadany kąt względny ramek."""
+        """AlignAxes(a1, a2, alpha) - wymusza zadany kąt względny ramek.
+
+        W 3D trzeba do tego iloczynu wektorowego dwóch osi (a1 x a2), bo osi
+        obrotu jest wiele. W 2D oś jest jedna, więc "kąt względny" to zwykła
+        liczba i cały więz sprowadza się do odejmowania.
+
+        targetAngle = 0 oznacza "obie ramki mają ten sam kąt", czyli spaw.
+        Uwaga: FixedJoint podaje tu restAngle zapamiętany przy montażu, żeby
+        nie prostować na siłę belek, które zostały zbudowane pod kątem."""
         self.updateGlobalFrames()
         corr = normalizeAngle(self.relativeAngle() - targetAngle)
         self.torque = applyAngularCorrection(corr, self.body0, self.body1,
@@ -519,8 +651,15 @@ class Joint:
 
     def limitAngle(self, minAngle: float, maxAngle: float,
                    compliance: float = 0.0) -> None:
-        """LimitAngle: nic nie robi wewnątrz zakresu, na krawędzi popycha
-        z powrotem. Ustawienie min = max daje serwo (kąt docelowy)."""
+        """LimitAngle(n, a1, a2, min, max, alpha) - ogranicznik zakresu.
+
+        Wewnątrz przedziału NIE ROBI NIC (zawias jest swobodny), a po jego
+        przekroczeniu popycha z powrotem dokładnie do krawędzi. To jest więz
+        jednostronny, kątowy odpowiednik liny.
+
+        Sztuczka: ustawienie minAngle = maxAngle = fi zamienia ogranicznik
+        w serwo, które trzyma zadany kąt. Tak właśnie na slajdach Müllera
+        z tego samego klocka powstają Hinge, Servo i Motor."""
         self.updateGlobalFrames()
         phi = self.relativeAngle()
         if minAngle <= phi <= maxAngle:
@@ -530,15 +669,23 @@ class Joint:
                                              self.body0, self.body1, compliance)
 
     def dampAngular(self, dt: float, coeff: float) -> None:
-        """DampAngular ze slajdu: zbliża prędkości kątowe obu ciał.
-        Działa na POZIOMIE PRĘDKOŚCI, czyli po updateVelocities."""
+        """DampAngular ze slajdu - zbliża prędkości kątowe obu ciał.
+
+        Nie jest to tarcie w przegubie w sensie fizycznym, tylko wygaszanie
+        drgań. Mnożnik min(coeff*dt, 1) gwarantuje, że nigdy nie odejmiemy
+        więcej niż całą różnicę prędkości - inaczej tłumienie zaczęłoby
+        rozkręcać układ w drugą stronę."""
         if coeff <= 0.0:
             return
         corr = (self.body1.omega - self.body0.omega) * min(coeff * dt, 1.0)
         applyAngularCorrection(corr, self.body0, self.body1, 0.0, velocityLevel=True)
 
     def dampLinear(self, dt: float, coeff: float) -> None:
-        """DampLinear ze slajdu: tłumi względny ruch punktów zaczepienia."""
+        """DampLinear ze slajdu - tłumi względny ruch punktów zaczepienia.
+
+        velocityAt() liczy prędkość PUNKTU ciała (v + omega x r), a nie
+        środka masy - bo to punkt zaczepienia jest tym, co ma przestać drgać.
+        Przydatne na linkach: bez tego łańcuch ogniw drga w nieskończoność."""
         if coeff <= 0.0:
             return
         self.updateGlobalFrames()
@@ -559,7 +706,7 @@ class RopeJoint(Joint):
 
     def __init__(self, body0: Body, body1: Body, anchor0: Vec2, anchor1: Vec2,
                  length: Optional[float] = None, compliance: float = 0.0,
-                 unilateral: bool = True, damping: float = 0.2):
+                 unilateral: bool = True, damping: float = 0.0):
         super().__init__(body0, body1, anchor0)
         self.localPos1 = body1.worldToLocal(anchor1)   # drugi koniec osobno
         self.globalPos1 = anchor1.clone()
@@ -653,10 +800,18 @@ class World:
     """
 
     def __init__(self, gravity: Vec2 = Vec2(0.0, -9.81),
-                 dt: float = 1.0 / 60.0, numSubSteps: int = 40):
+                 dt: float = 1.0 / 60.0, numSubSteps: int = 40,
+                 numIterations: int = 1):
         self.gravity = gravity.clone()
         self.dt = dt
+        # POKRĘTŁO nr 2: więcej podkroków = sztywniejsze więzy (błąd ~ 1/n^2),
+        # koszt rośnie liniowo. To pierwsza rzecz do podkręcenia, gdy linki
+        # się rozciągają, a nie da się już zwiększyć masy ogniw.
         self.numSubSteps = numSubSteps
+        # POKRĘTŁO nr 3: dodatkowe przejścia po więzach WEWNĄTRZ podkroku.
+        # Przy tym samym koszcie działa słabiej niż podkroki (patrz tabela
+        # w nagłówku), ale bywa przydatne, gdy dt jest już bardzo małe.
+        self.numIterations = numIterations
         self.bodies: List[Body] = []
         self.joints: List[Joint] = []
 
@@ -693,13 +848,46 @@ class World:
         return self._add(RopeJoint(b0, b1, anchor0, anchor1, **kw))
 
     def connectRopeChain(self, b0: Body, anchor0: Vec2, b1: Body, anchor1: Vec2,
-                         numNodes: int = 4, nodeMass: float = 0.1,
-                         length: Optional[float] = None) -> List[PointMass]:
+                         numNodes: int = 4, nodeMass: Optional[float] = None,
+                         length: Optional[float] = None,
+                         compliance: float = 0.0) -> List[PointMass]:
         """Lina z ogniw: b0 --o--o--o--o-- b1. Zamiast jednego więzu robimy
-        łańcuch mas punktowych, dzięki czemu lina naprawdę zwisa i faluje."""
+        łańcuch mas punktowych, dzięki czemu lina naprawdę zwisa i faluje.
+
+        TU SIĘ STROI ROZCIĄGLIWOŚĆ LINY (patrz tabela w nagłówku pliku):
+
+        nodeMass -- POKRĘTŁO nr 1, najważniejsze. Solver jest typu
+            Gauss-Seidel, więc przy skrajnym stosunku mas (ogniwo 0.001 kg
+            trzymające 100 kg) informacja o sile nie zdąży przejść przez
+            łańcuch w jednym przejściu i lina się "gumuje". Reguła kciuka:
+            masa ogniwa >= masa ładunku / 100. Poniżej jest to wymuszane
+            automatycznie, z komunikatem - żeby scena nie psuła się po cichu.
+            nodeMass = None -> masa dobrana sama (1/50 masy ładunku).
+
+        numNodes -- POKRĘTŁO nr 4. Każde ogniwo to kolejne kolanko, przez
+            które musi przejść siła, więc mniej ogniw = sztywniejsza lina.
+            Więcej ogniw = ładniejszy zwis. 4-8 to zwykle dobry kompromis.
+
+        compliance -- zostawiamy 0.0. Dodatnia compliance to CELOWA
+            sprężystość liny (w m/N), a nie lekarstwo na złą zbieżność.
+        """
+        # --- dobór masy ogniwa i zabezpieczenie przed skrajnym stosunkiem mas
+        loadMass = b1.mass if b1.mass > 0.0 else b0.mass
+        if nodeMass is None:
+            nodeMass = max(loadMass / 50.0, 1e-3)
+        minMass = loadMass / 100.0
+        if loadMass > 0.0 and nodeMass < minMass:
+            print(f"[lina] masa ogniwa {nodeMass:g} kg jest za mała wobec "
+                  f"ładunku {loadMass:g} kg - podnoszę do {minMass:g} kg "
+                  f"(inaczej lina będzie się rozciągać)")
+            nodeMass = minMass
+
         if length is None:
             length = Vec2().subtractVectors(anchor1, anchor0).length()
-        seg = length / (numNodes + 1)
+        seg = length / (numNodes + 1)          # długość pojedynczego ogniwa
+
+        # kierunek, wzdłuż którego rozkładamy ogniwa na starcie; dzięki temu
+        # w chwili t = 0 żaden więz nie jest naruszony i nie ma "szarpnięcia"
         direction = Vec2().subtractVectors(anchor1, anchor0)
         dl = direction.length()
         direction.scale(1.0 / dl if dl > 0.0 else 0.0)
@@ -710,10 +898,13 @@ class World:
             p = anchor0.clone().add(direction, seg * (i + 1))
             node = self.addPointMass(p.x, p.y, nodeMass, 0.03,
                                      color=(225, 225, 225))
-            self.connectRope(prevBody, node, prevPoint, p, length=seg)
+            self.connectRope(prevBody, node, prevPoint, p, length=seg,
+                             compliance=compliance)
             nodes.append(node)
             prevBody, prevPoint = node, p
-        self.connectRope(prevBody, b1, prevPoint, anchor1, length=seg)
+        # ostatnie ogniwo domyka łańcuch do ciała docelowego
+        self.connectRope(prevBody, b1, prevPoint, anchor1, length=seg,
+                         compliance=compliance)
         return nodes
 
     def _add(self, obj):
@@ -726,8 +917,9 @@ class World:
         for _ in range(self.numSubSteps):
             for b in self.bodies:
                 b.integrate(sdt, self.gravity)
-            for j in self.joints:
-                j.solve()
+            for _ in range(self.numIterations):
+                for j in self.joints:
+                    j.solve()
             for b in self.bodies:
                 b.updateVelocities()
             for j in self.joints:
@@ -763,45 +955,58 @@ def cY(y: float) -> int:
 # %% 8. SCENA - PRZYKŁAD BUDOWY Z KLOCKÓW
 # =============================================================================
 
-world = World(gravity=Vec2(0.0, -9.81), dt=1.0 / 60.0, numSubSteps=40)
+world = World(gravity=Vec2(0.0, -9.81), dt=1.0 / 60.0,
+              numSubSteps=40,        # POKRĘTŁO nr 2 (sztywność wszystkich więzów)
+              numIterations=1)       # POKRĘTŁO nr 3
 
 
 def setup_scene() -> None:
-    """Żuraw: nieruchoma podstawa -> maszt (spaw) -> wysięgnik na zawiasie
-    -> odciąg z linki -> ładunek na linie z ogniw -> wahadło na zawiasie.
-    Trzy typy złączy i oba typy ciał, w kilkunastu linijkach."""
+    """Żuraw z dwoma ładunkami na linkach.
+
+    Klocki użyte w scenie:
+        Beam(density=0)  - element nieruchomy (podstawa)
+        FixedJoint       - maszt i zastrzał przyspawane do podstawy
+        RevoluteJoint    - wysięgnik obraca się na szczycie masztu
+        connectRopeChain - dwie liny z ogniw, z ładunkami na końcach
+
+    Masy ogniw są dobrane do mas ładunków (reguła: >= ładunek/100), inaczej
+    liny gumują - patrz tabela w nagłówku pliku."""
     world.clear()
 
-    # podstawa: density = 0 -> masa nieskończona, element nieruchomy
+    # --- podstawa: density = 0 -> masa 0 -> ciało nieruchome
     base = world.addBeam(0.0, 0.05, 2.0, 0.10, density=0.0, color=(120, 122, 132))
 
-    # maszt przyspawany do podstawy (ZŁĄCZE STAŁE)
+    # --- maszt przyspawany do podstawy (ZŁĄCZE STAŁE)
     mast = world.addBeamBetween(Vec2(0.0, 0.10), Vec2(0.0, 2.20), 0.12,
                                 density=25.0, color=(176, 138, 84))
     world.connectFixed(base, mast, Vec2(0.0, 0.10))
 
-    # zastrzał: druga belka też przyspawana - rama sztywna
+    # --- zastrzał: druga belka też przyspawana -> rama sztywna
     brace = world.addBeamBetween(Vec2(-0.8, 0.10), Vec2(0.0, 1.60), 0.09,
                                  density=25.0, color=(176, 138, 84))
     world.connectFixed(base, brace, Vec2(-0.8, 0.10))
     world.connectFixed(mast, brace, Vec2(0.0, 1.60))
 
-    # wysięgnik na ZAWIASIE w szczycie masztu, z ograniczeniem kąta
-    boom = world.addBeam(0, 2.20, 1.8, 0.10, density=18.0)
-    world.connectRevolute(mast, boom, Vec2(0.0, 2.20),
-                          minAngle=-2, maxAngle=2, damping=1.0)
+    # --- wysięgnik na ZAWIASIE w szczycie masztu.
+    # Gęstość jest duża, bo lekki wysięgnik obciążony 100 kg z jednej strony
+    # natychmiast staje pionowo i uderza w ogranicznik kąta.
+    boom = world.addBeam(0.5, 2.20, 1.8, 0.12, density=120.0)
+    world.connectRevolute(mast, boom, Vec2(0, 2.20),
+                          minAngle=-2, maxAngle=2,   # ogranicznik wychyłu
+                          damping=2.0)                    # wygaszanie kołysania
 
-    # ładunek na LINIE Z OGNIW ina faluje
-    hook = world.addPointMass(1, 0.1, 1.0, 0.1, color=(205, 70, 70))
-    world.connectRopeChain(boom, boom.end(1.0), hook, hook.pos.clone(),
-                           numNodes=15, nodeMass=0.001)
+    # --- lekki ładunek na długiej linie (prawa strona)
+    # 1 kg, ogniwa po 0.05 kg -> stosunek 20:1, lina praktycznie nierozciągliwa
+    load1 = world.addPointMass(0.9, 0.6, 1.0, 0.08, color=(90, 200, 255))
+    world.connectRopeChain(boom, boom.end(1.0), load1, load1.pos.clone(),
+                           numNodes=8, nodeMass=0.1)
 
-    # ładunek na LINIE Z OGNIW
-    hook = world.addPointMass(-1, 1.9, 100.0, 0.4, color=(205, 70, 70))
-    world.connectRopeChain(boom, boom.end(-1.0), hook, hook.pos.clone(),
-                           numNodes=5, nodeMass=0.001)
-
-
+    # --- ciężki ładunek na krótkiej linie (lewa strona)
+    # 100 kg, ogniwa po 1.0 kg -> stosunek 100:1, błąd rzędu 0.1 %
+    # nodeMass=None też jest poprawne: masa dobierze się sama (ładunek/50)
+    load2 = world.addPointMass(-0.9, 1.90, 100.0, 0.18, color=(205, 70, 70))
+    world.connectRopeChain(boom, boom.end(-1.0), load2, load2.pos.clone(),
+                           numNodes=5, nodeMass=0.1 )
 
 
 # =============================================================================
