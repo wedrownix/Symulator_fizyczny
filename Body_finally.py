@@ -9,6 +9,32 @@ from Vector2_finally import Vec2
 def normalizeAngle(a: float) -> float:
     return (a + math.pi) % (2.0 * math.pi) - math.pi
 
+# =============================================================================
+# %% 2. ZABEZPIECZENIA NUMERYCZNE
+# =============================================================================
+# Po co to jest:
+# W poprzedniej wersji przy bardzo mocnym naciągnięciu układu prostokąty
+# "świrowały" - wyglądały jak spłaszczone i latały po ekranie bez końca.
+# Przyczyna nie jest graficzna, tylko numeryczna, i ma trzy warstwy:
+#
+#  1. Duże naruszenie więzu C daje w jednym podkroku dużą korektę położenia.
+#     Ta korekta zamienia się potem na prędkość przez v = (x - prev)/dt, więc
+#     przy małym dt z korekty 0.1 m robi się prędkość rzędu setek m/s.
+#  2. Korekta przyłożona z dala od środka masy daje przyrost kąta
+#     invI * (r x p). Przy dużym p to może być kilka radianów W JEDNYM
+#     PODKROKU. Obrót o kilka radianów w kroku łamie założenie o małych
+#     kątach, na którym opiera się linearyzacja - układ dostaje energię
+#     zamiast ją tracić i rozkręca się sam.
+#  3. Gdy współrzędne urosną do 1e6 i więcej, cX/cY zwracają liczby poza
+#     zakresem int obsługiwanym przez pygame - wtedy wielokąt rysuje się
+#     ze zwiniętymi wierzchołkami i WYGLĄDA jak spłaszczony prostokąt.
+#     To już tylko objaw, ale to on rzuca się w oczy.
+#
+# Lekarstwo: ograniczamy przyrost kąta z pojedynczej korekty i obcinamy
+# prędkości. To nie jest fizyka, tylko bezpiecznik - w normalnej symulacji
+# te limity nigdy się nie aktywują, a w patologicznej powstrzymują lawinę.
+# Ponadto rysowanie pomija ciała o nieskończonych/absurdalnych współrzędnych.
+
 MAX_ROT_CORRECTION = 0.5      # [rad] maksymalny obrót z jednej korekty
 MAX_SPEED = 100.0             # [m/s]
 MAX_OMEGA = 50.0              # [rad/s]
