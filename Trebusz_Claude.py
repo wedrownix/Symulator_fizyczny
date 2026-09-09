@@ -723,26 +723,27 @@ def setup_scene() -> None:
     world.connectFixed(base, brace, Vec2(-0.8, 0.10))
     world.connectFixed(mast, brace, Vec2(0.0, 1.60))
 
-    # --- wysięgnik na ZAWIASIE w szczycie masztu.
-    # Gęstość jest duża, bo lekki wysięgnik obciążony 100 kg z jednej strony
-    # natychmiast staje pionowo i uderza w ogranicznik kąta.
-    boom = world.addBeam(0.5, 2.20, 1.8, 0.12, density=120.0)
+    armLength: float = 2.0  # długość ramienia trebusza
+    armPivot: float = 0.25  # proporcja ramienia krótszego do całego trebusza
+
+    # --- 3. ramię miotające na ZAWIASIE w wierzchołku
+    # oś leży w (0,0) czyli w 1/4 długości od lewego końca, więc
+    # środek masy jest przesunięty o 1/4 względem osi
+    boom = world.addBeam(armLength*armPivot, 2.20, armLength, 0.12, density=120.0)
     world.connectRevolute(mast, boom, Vec2(0, 2.20),
-                          minAngle=-2, maxAngle=2,   # ogranicznik wychyłu
+                          minAngle=-3, maxAngle=3,   # ogranicznik wychyłu
                           damping=2.0)                    # wygaszanie kołysania
 
     # --- lekki ładunek na długiej linie (prawa strona)
     # 1 kg, ogniwa po 0.05 kg -> stosunek 20:1, lina praktycznie nierozciągliwa
     load1 = world.addPointMass(0.9, 0.6, 1.0, 0.08, color=(90, 200, 255))
     world.connectRopeChain(boom, boom.end(1.0), load1, load1.pos.clone(),
-                           numNodes=8, nodeMass=0.1)
+                           numNodes=5, nodeMass=0.1)
 
-    # --- ciężki ładunek na krótkiej linie (lewa strona)
-    # 100 kg, ogniwa po 1.0 kg -> stosunek 100:1, błąd rzędu 0.1 %
-    # nodeMass=None też jest poprawne: masa dobierze się sama (ładunek/50)
+    # --- 4. przeciwwaga na krótkiej linie z ogniw
     load2 = world.addPointMass(-0.9, 1.90, 100.0, 0.18, color=(205, 70, 70))
     world.connectRopeChain(boom, boom.end(-1.0), load2, load2.pos.clone(),
-                           numNodes=5, nodeMass=0.1 )
+                           numNodes=3, nodeMass=0.1 )
 
 
 # =============================================================================
