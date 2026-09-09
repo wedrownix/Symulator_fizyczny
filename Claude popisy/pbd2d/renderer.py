@@ -111,7 +111,7 @@ class Renderer:
 
     # ---- złącza ---------------------------------------------------------
     def _drawRope(self, j: RopeJoint) -> None:
-        color = (238, 238, 238) if not j.disabled else (110, 80, 80)
+        color = (238, 238, 238) if not j.disabled else (28, 30, 36)
         pygame.draw.line(self.surface, color,
                          self.camera.toScreen(j.globalPos0),
                          self.camera.toScreen(j.globalPos1), 3)
