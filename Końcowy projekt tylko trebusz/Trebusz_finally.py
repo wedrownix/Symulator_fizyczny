@@ -96,14 +96,22 @@ class TrebuchetParams:
     # --- przeciwwaga (na krótszym ramieniu) ---
     counterMass = 100.0
     counterRadius = 0.18
-    counterRopeLength = 0.50     # długość liny przeciwwagi
+    counterRopeLength = 1.2  # długość liny przeciwwagi
+    # UWAGA - to jest najczulszy parametr całej maszyny. Przeciwwaga zwisa
+    # pionowo, więc ta długość to WPROST wysokość, z jakiej spada 100 kg.
+    # Każde 10 cm to 98 J energii wejściowej (m*g*h), a maszyna oddaje
+    # pociskowi kilkanaście procent z tego. Zmierzone v_max pocisku:
+    #     0.30 m -> 16.1 m/s      0.50 m -> 13.4 m/s      0.80 m -> 9.0 m/s
+    # W pierwotnej wersji sceny przeciwwaga wisiała UKOŚNIE: lina miała 0.5 m,
+    # ale w pionie dzieliło ją od ramienia tylko 0.3 m. Wyprostowanie zwisu
+    # przy zachowaniu długości liny obniżyło masę o 20 cm i zabrało 30 % mocy.
     counterNodes = 3             # z ilu ogniw zrobiona jest ta lina
     counterNodeMass = 1.0        # reguła: >= counterMass / 100
 
     # --- pocisk (na dłuższym ramieniu, na procy) ---
     projectileMass = 1.0
     projectileRadius = 0.08
-    slingLength = 1.71           # długość procy
+    slingLength = 1           # długość procy
     slingAngleDeg = 20.0         # odchylenie procy od pionu na starcie
     slingNodes = 5
     slingNodeMass = 0.1          # reguła: >= projectileMass / 100
