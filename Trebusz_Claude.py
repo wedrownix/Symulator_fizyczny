@@ -132,76 +132,13 @@ MAX_COORD = 1.0e4             # [m] dalej uznajemy ciało za "uciekłe"
 # %% 3. BRYŁA SZTYWNA
 # =============================================================================
 
-from Body_finally import Body ,Beam, PointMass
+from Body_finally import Body ,Beam, PointMass, applyLinearCorrection, applyAngularCorrection
 
 
 
 # =============================================================================
 # %% 5. ZŁĄCZA
 # =============================================================================
-
-# --- dwa wzory ze slajdów "Linear/Angular Correction" ------------------------
-# Przez te dwie funkcje przechodzą WSZYSTKIE więzy w całym silniku.
-
-def applyLinearCorrection(corr: Vec2, body0: Body, pos0: Vec2,
-                          body1: Body, pos1: Vec2,
-                          compliance: float = 0.0,
-                          velocityLevel: bool = False) -> float:
-    """
-        C      = |dp|
-        n      = dp / |dp|
-        w_i    = 1/m_i + ((p_i - x_i) x n)^2 / I_i
-        lambda = -C / (w1 + w2 + alpha/dt^2)
-        x_i   <- x_i +- lambda n / m_i
-        q_i   <- q_i +- lambda I^-1 ((p_i - x_i) x n)
-
-    Zwraca lambda/dt^2, czyli SIŁĘ więzu w niutonach.
-    Konwencja: corr = ile ma zmaleć (wielkość1 - wielkość0); ciało 0 dostaje
-    korektę "+", ciało 1 "-".
-    """
-    C = corr.length()
-    if C == 0.0:
-        return 0.0
-    n = corr.clone().scale(1.0 / C)
-
-    w = body0.getInverseMass(n, pos0) + body1.getInverseMass(n, pos1)
-    if w == 0.0:
-        return 0.0
-
-    if velocityLevel:
-        dl = C / w                                   # bez alpha (poziom prędkości)
-    else:
-        alpha = compliance / (body0.dt * body0.dt)   # XPBD
-        dl = C / (w + alpha)
-
-    p = n.scale(dl)
-    body0.applyImpulse(p, pos0, velocityLevel)
-    body1.applyImpulse(p.clone().scale(-1.0), pos1, velocityLevel)
-    return dl / (body0.dt * body0.dt)
-
-
-def applyAngularCorrection(corr: float, body0: Body, body1: Body,
-                           compliance: float = 0.0,
-                           velocityLevel: bool = False) -> float:
-    """Wersja kątowa: w_i = 1/I_i, reszta identyczna.
-    Zwraca lambda/dt^2, czyli MOMENT więzu w Nm."""
-    if corr == 0.0:
-        return 0.0
-    w = body0.getInverseMass(Vec2(), None) + body1.getInverseMass(Vec2(), None)
-    if w == 0.0:
-        return 0.0
-
-    if velocityLevel:
-        dl = corr / w
-    else:
-        alpha = compliance / (body0.dt * body0.dt)
-        dl = corr / (w + alpha)
-
-    body0.applyTwist(dl, velocityLevel)
-    body1.applyTwist(-dl, velocityLevel)
-    return dl / (body0.dt * body0.dt)
-
-
 
 class Joint:
     """
