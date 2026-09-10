@@ -28,7 +28,7 @@ from pbd2d.renderer import Camera, Renderer, Hud
 from scenes import trebuchet, machines
 
 # --- rozmiar okna: 3200x2000 pod duży monitor; zmniejsz, jeśli trzeba -------
-SCREEN_W, SCREEN_H = 3200, 2000
+SCREEN_W, SCREEN_H = 2500, 1200
 
 pygame.init()
 win = pygame.display.set_mode((SCREEN_W, SCREEN_H))

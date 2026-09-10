@@ -39,7 +39,7 @@ pygame.init()
 # %% 1. OKNO I KAMERA
 # =============================================================================
 
-screen_width, screen_height = 3200, 2000
+screen_width, screen_height = 1200, 1000
 win = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Trebusz - złącza XPBD 2D")
 clock = pygame.time.Clock()
