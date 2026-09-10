@@ -140,12 +140,14 @@ class World:
                                      color=(225, 225, 225))
             node.damping = nodeDamping
             self.connectRope(prevBody, node, prevPoint, p, length=seg,
-                             compliance=compliance)
+                             compliance=compliance, damping=damping,
+                             unilateral=unilateral)
             nodes.append(node)
             prevBody, prevPoint = node, p
         # ostatnie ogniwo domyka łańcuch do ciała docelowego
         self.connectRope(prevBody, b1, prevPoint, anchor1, length=seg,
-                         compliance=compliance)
+                         compliance=compliance, damping=damping,
+                             unilateral=unilateral)
         return nodes
 
     def _add(self, obj):
