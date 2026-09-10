@@ -88,10 +88,8 @@ class TrebuchetParams:
     armLength = 2.0              # CAŁA długość ramienia
     armPivot = 0.25              # oś w 1/4 długości -> proporcja ramion 1:3
     armThickness = 0.12
-    armDensity = 120.0           # ciężkie ramię: lekkie stawałoby pionowo
-    armMinAngle = -3.0           # ogranicznik wychyłu [rad]
-    armMaxAngle = 3.0
-    armDamping = 0.5             # wygaszanie kołysania w osi
+    armDensity = 12           # ciężkie ramię: lekkie stawałoby pionowo
+
 
     # --- przeciwwaga (na krótszym ramieniu) ---
     counterMass = 100.0
@@ -111,10 +109,10 @@ class TrebuchetParams:
     # --- pocisk (na dłuższym ramieniu, na procy) ---
     projectileMass = 1.0
     projectileRadius = 0.08
-    slingLength = 1           # długość procy
-    slingAngleDeg = 20.0         # odchylenie procy od pionu na starcie
+    slingLength = 1.8           # długość procy
+    slingAngleDeg = 0         # odchylenie procy od pionu na starcie
     slingNodes = 5
-    slingNodeMass = 0.1          # reguła: >= projectileMass / 100
+    slingNodeMass = 0.05          # reguła: >= projectileMass / 100
 
     # --- właściwości pochodne: liczone z powyższych, nie wpisujemy ręcznie ---
     @property
@@ -183,13 +181,14 @@ def setup_scene() -> None:
                                 density=p.mastDensity, color=(176, 138, 84))
     world.connectFixed(base, mast, mastFoot)              # SPAW do podstawy
 
-    # --- 3. ZASTRZAŁ (ukośna belka usztywniająca) ------------------------
-    braceFoot = Vec2(p.braceFootX, p.baseHeight)
-    braceTop = Vec2(0.0, p.braceTopY)
-    brace = world.addBeamBetween(braceFoot, braceTop, p.braceThickness,
+    # --- 3. ZASTRZAŁ ( dwie ukośne belki usztywniające) ------------------------
+    for pos_x in [p.braceFootX, -p.braceFootX]:
+        braceFoot = Vec2(pos_x, p.baseHeight)
+        braceTop = Vec2(0.0, p.braceTopY)
+        brace = world.addBeamBetween(braceFoot, braceTop, p.braceThickness,
                                  density=p.braceDensity, color=(176, 138, 84))
-    world.connectFixed(base, brace, braceFoot)            # SPAW do podstawy
-    world.connectFixed(mast, brace, braceTop)             # SPAW do masztu
+        world.connectFixed(base, brace, braceFoot)            # SPAW do podstawy
+        world.connectFixed(mast, brace, braceTop)             # SPAW do masztu
     # Dwa spawy + belka = trójkąt. Trójkąt jest figurą niedeformowalną,
     # więc maszt nie może się położyć nawet pod obciążeniem 100 kg.
 
@@ -199,10 +198,7 @@ def setup_scene() -> None:
     arm = world.addBeam(p.armCenterOffset, p.mastHeight,
                         p.armLength, p.armThickness,
                         density=p.armDensity)
-    world.connectRevolute(mast, arm, p.pivot,
-                          minAngle=p.armMinAngle,     # ogranicznik wychyłu
-                          maxAngle=p.armMaxAngle,
-                          damping=p.armDamping)       # wygaszanie kołysania
+    world.connectRevolute(mast, arm, p.pivot)       # wygaszanie kołysania
 
     shortTip = arm.end(-1.0)     # koniec KRÓTKIEGO ramienia (przeciwwaga)
     longTip = arm.end(1.0)       # koniec DŁUGIEGO ramienia (proca)

@@ -83,9 +83,14 @@ class World:
         return self._add(RopeJoint(b0, b1, anchor0, anchor1, **kw))
 
     def connectRopeChain(self, b0: Body, anchor0: Vec2, b1: Body, anchor1: Vec2,
-                         numNodes: int = 4, nodeMass: Optional[float] = None,
+                         numNodes: int = 4,
+                         nodeMass: Optional[float] = None,
                          length: Optional[float] = None,
-                         compliance: float = 0.0) -> List[PointMass]:
+                         compliance: float = 0.0,
+                         damping: float = 0.0,
+                         unilateral: bool = True,
+                         nodeDamping: float = 0.0,
+                         ) -> List[PointMass]:
         """Lina z ogniw: b0 --o--o--o--o-- b1. Zamiast jednego więzu robimy
         łańcuch mas punktowych, dzięki czemu lina naprawdę zwisa i faluje.
 
@@ -133,6 +138,7 @@ class World:
             p = anchor0.clone().add(direction, seg * (i + 1))
             node = self.addPointMass(p.x, p.y, nodeMass, 0.03,
                                      color=(225, 225, 225))
+            node.damping = nodeDamping
             self.connectRope(prevBody, node, prevPoint, p, length=seg,
                              compliance=compliance)
             nodes.append(node)
