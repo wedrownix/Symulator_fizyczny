@@ -292,6 +292,10 @@ class Joint:
             elongation  o ile ten wektor jest dłuższy niż ma być (to jest C)
             corr        wektor o długości C, skierowany wzdłuż d -> tyle ma
                         zniknąć z różnicy (pozycja1 - pozycja0)
+        Mój komentarz:
+        Sprawdzam jaka jest odległość pomiędzy punktami na ciałach oznaczonymi jako więzy. Potem sprawdzam jaka powina
+        być ta odległość - to jest to moje restDistance i potem licze poprawkę którą wrzucam do applyLinearCorrection
+
         """
         self.updateGlobalFrames()
         d = Vec2().subtractVectors(self.globalPos1, self.globalPos0)
@@ -391,7 +395,7 @@ class RopeJoint(Joint):
         self.dampingCoeff = damping
 
     def solvePosition(self) -> None:
-        self.attach(self.length, self.compliance, self.unilateral)
+        self.attach(self.length, self.compliance, self.unilateral) #trzymam punkty w odległości self.length, nie ma potrzeby rozwiązywania kątów
 
     def solveVelocity(self, dt: float) -> None:
         self.dampLinear(dt, self.dampingCoeff)
@@ -555,6 +559,7 @@ class World:
                   f"(inaczej lina będzie się rozciągać)")
             nodeMass = minMass
 
+        # KOD który tworzy linę
         if length is None:
             length = Vec2().subtractVectors(anchor1, anchor0).length()
         seg = length / (numNodes + 1)          # długość pojedynczego ogniwa
